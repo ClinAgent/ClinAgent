@@ -35,3 +35,18 @@ States: initially empty; explicit synthetic-example fill (never auto-submit);
 loading; partial result without cloud synthesis; complete; validation and network
 errors. Editing fields invalidates old results. No browser patient persistence.
 Focus, reduced motion, mobile layout and accessible chart alternatives are required.
+
+## Simplified assessment interface
+
+The previous view repeated technical labels, service status, and explanatory
+headlines at every level. These competed with the patient measurements and made
+small text harder to scan. The revised view uses one descriptive page title,
+sentence-case section headings, and no service configuration banner. Setup
+instructions belong in project documentation. An unavailable summary remains
+clearly identified beside its results without exposing environment settings.
+
+Keep the existing restrained teal, white, and slate palette. Use a 350px form rail,
+42px controls, larger supporting text, and flat bordered panels. Remove numbered
+field groups, redundant section labels, and decorative summary accents. Preserve
+source passages, uncertainty, consent information, keyboard focus, and a single
+mobile reading order. No additional ornament or marketing copy is needed.

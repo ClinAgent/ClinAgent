@@ -8,7 +8,7 @@ test("intake validates before sending and clears results when edited", async ({
   await page.goto("/");
   await expect(
     page.getByRole("heading", {
-      name: "From patient data to clinical context.",
+      name: "Cardiovascular assessment",
     }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Analyze case", exact: true }).click();
@@ -104,5 +104,5 @@ test("renders a complete synthesis response from a test-only provider fixture", 
   await page.getByRole("button", { name: "Load example" }).click();
   await page.getByRole("button", { name: "Analyze case", exact: true }).click();
   await expect(page.getByText(summary, { exact: true })).toBeVisible();
-  await expect(page.getByText("REVIEW READY", { exact: true })).toBeVisible();
+  await expect(page.getByText("Complete", { exact: true })).toBeVisible();
 });

@@ -3,7 +3,6 @@ import type { FormEvent } from "react";
 import {
   Activity,
   ArrowRight,
-  Check,
   ChevronDown,
   ClipboardList,
   ExternalLink,
@@ -13,7 +12,6 @@ import {
   Info,
   LoaderCircle,
   RotateCcw,
-  ShieldCheck,
 } from "lucide-react";
 import {
   Bar,
@@ -36,29 +34,11 @@ export default function App() {
   const [result, setResult] = useState<Analysis | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [health, setHealth] = useState<{
-    cloud_configured: boolean;
-    provider: string;
-  } | null>(null);
   const [isExample, setIsExample] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const abort = useRef<AbortController | null>(null);
   const resultsRef = useRef<HTMLElement | null>(null);
-  useEffect(() => {
-    const controller = new AbortController();
-    fetch("/health", { signal: controller.signal })
-      .then((r) => {
-        if (!r.ok) throw Error();
-        return r.json();
-      })
-      .then(setHealth)
-      .catch(() => {});
-    return () => {
-      controller.abort();
-      abort.current?.abort();
-    };
-  }, []);
-  const filled = fields.filter((f) => values[f.key] !== "").length;
+  useEffect(() => () => abort.current?.abort(), []);
   const change = (key: string, value: string) => {
     setValues((v) => ({ ...v, [key]: value }));
     setResult(null);
@@ -118,7 +98,7 @@ export default function App() {
           ? e.name === "AbortError"
             ? "The request timed out. Try again when the service is ready."
             : e instanceof TypeError
-              ? "Could not reach the analysis service. Check the backend and try again."
+              ? "Could not reach the analysis service. Please try again."
               : e.message
           : "Could not reach the analysis service.",
       );
@@ -155,28 +135,15 @@ export default function App() {
         </a>
         <div className="header-divider" />
         <span className="header-label">Clinical decision support</span>
-        <span className="research-badge">
-          <FlaskConical size={14} /> Research workspace
-        </span>
       </header>
       <main className="workspace">
         <div className="page-heading">
           <div>
-            <p className="eyebrow">CARDIOVASCULAR · CASE REVIEW</p>
-            <h1>From patient data to clinical context.</h1>
+            <h1>Cardiovascular assessment</h1>
             <p className="subtitle">
-              Review the prediction, understand its contributors, and inspect
-              the evidence.
+              Enter patient measurements to review the estimate and supporting
+              evidence.
             </p>
-          </div>
-          <div className="service-state">
-            <span className={`status-dot ${health ? "online" : ""}`} />
-            {health ? "Local analysis ready" : "Connecting to service"}
-            <small>
-              {health?.cloud_configured
-                ? `${health.provider} synthesis configured`
-                : "Cloud synthesis not configured"}
-            </small>
           </div>
         </div>
         <div className="workspace-grid">
@@ -184,15 +151,12 @@ export default function App() {
             <div className="panel-top">
               <div className="title-with-icon">
                 <ClipboardList size={19} />
-                <h2>Patient intake</h2>
+                <h2>Patient details</h2>
               </div>
-              <span className="mono count">{filled}/13</span>
             </div>
             <div className="intake-caption">
               <span>
-                {isExample
-                  ? "Synthetic example · editable"
-                  : "Unsaved case · no identifying details"}
+                {isExample ? "Example data" : "Enter measurements below"}
               </span>
               <button
                 type="button"
@@ -209,12 +173,9 @@ export default function App() {
             </div>
             <form id="patient-form" onSubmit={analyze}>
               <fieldset disabled={busy} className="all-fields">
-                {groups.map((group, index) => (
+                {groups.map((group) => (
                   <fieldset className="field-group" key={group.title}>
-                    <legend>
-                      <span className="group-number">{index + 1}</span>
-                      {group.title}
-                    </legend>
+                    <legend>{group.title}</legend>
                     <p className="field-note">{group.note}</p>
                     <div className="field-grid">
                       {group.fields.map((field) => (
@@ -239,7 +200,7 @@ export default function App() {
                               >
                                 <option value="">
                                   {field.optional
-                                    ? "Unknown · use imputation"
+                                    ? "Unknown"
                                     : "Select a result"}
                                 </option>
                                 {field.options.map(([value, label]) => (
@@ -308,8 +269,8 @@ export default function App() {
                   <RotateCcw size={13} /> Clear measurements
                 </button>
                 <p className="privacy-note">
-                  Measurements are sent to the configured cloud provider for
-                  synthesis. Use synthetic or appropriately consented data.
+                  Use example or consented data. Measurements may be sent to an
+                  AI provider to generate a summary.
                 </p>
               </div>
             </form>
@@ -323,25 +284,21 @@ export default function App() {
             <div className="results-heading">
               <div className="flex items-center gap-2">
                 <span className="small-rule" />
-                <h2>Clinical review</h2>
+                <h2>Assessment results</h2>
               </div>
-              <span className="mono result-state">
+              <span className="result-state" aria-live="polite">
                 {busy
-                  ? "PROCESSING"
+                  ? "Analyzing…"
                   : result
                     ? result.status === "complete"
-                      ? "REVIEW READY"
-                      : "PARTIAL RESULT"
-                    : "AWAITING MEASUREMENTS"}
+                      ? "Complete"
+                      : "Summary unavailable"
+                    : "Not yet analyzed"}
               </span>
             </div>
             <div className="overview-grid">
               <article className="panel probability-panel">
-                <div className="section-label">
-                  MODEL ESTIMATE
-                  <Info size={14} />
-                </div>
-                <h3>Disease presence</h3>
+                <h3>Disease probability</h3>
                 <div
                   className="gauge-wrap"
                   role="img"
@@ -396,7 +353,7 @@ export default function App() {
                 <div className="estimate-note">
                   {result
                     ? `${probability >= 50 ? "Above" : "Below"} the model’s 50% classification threshold.`
-                    : "Complete intake to generate an estimate."}
+                    : "Add measurements to see the estimate."}
                   <small>
                     Existing disease in the Cleveland cohort.
                     <br />
@@ -405,12 +362,9 @@ export default function App() {
                 </div>
               </article>
               <article className="panel contributors-panel">
-                <div className="section-label">
-                  LOCAL EXPLANATION<span className="tag">SHAP</span>
-                </div>
-                <h3>What shaped this result?</h3>
+                <h3>Key factors</h3>
                 <p className="card-description">
-                  Signed contributions to the model probability.
+                  How each measurement influences the estimate.
                 </p>
                 {result ? (
                   <>
@@ -476,12 +430,10 @@ export default function App() {
                       className="text-button"
                       onClick={() => setShowAll(!showAll)}
                     >
-                      {showAll
-                        ? "Show strongest six"
-                        : "View all 13 contributions"}
+                      {showAll ? "Show top six" : "View all factors"}
                     </button>
                     <details className="chart-data">
-                      <summary>Read contribution values</summary>
+                      <summary>View detailed values</summary>
                       <ul>
                         {result.prediction.contributions.map((c) => (
                           <li key={c.feature}>
@@ -501,7 +453,7 @@ export default function App() {
                       ))}
                     </div>
                     <p>
-                      Your case’s contributing features
+                      The most influential measurements
                       <br />
                       will appear here.
                     </p>
@@ -513,16 +465,12 @@ export default function App() {
               </article>
             </div>
             <article className="panel evidence-panel">
-              <div className="section-label">
-                SUPPORTING EVIDENCE<span className="tag">2019 ACC/AHA</span>
-              </div>
               <div className="evidence-title">
-                <h3>Read the source, not just the score.</h3>
-                <FileText size={20} />
+                <h3>Clinical evidence</h3>
+                <span className="tag">2019 ACC/AHA guideline</span>
               </div>
               <p className="card-description">
-                The exact two passages retrieved from the primary prevention
-                guideline.
+                Relevant passages from the primary prevention guideline.
               </p>
               {result ? (
                 <div className="evidence-list">
@@ -552,11 +500,8 @@ export default function App() {
                 <div className="evidence-empty">
                   <FileText size={27} />
                   <div>
-                    <strong>Evidence stays attached to the case.</strong>
-                    <p>
-                      After analysis, inspect each passage with its source
-                      reference.
-                    </p>
+                    <strong>No evidence to display yet.</strong>
+                    <p>Analyze a case to view related guideline passages.</p>
                   </div>
                 </div>
               )}
@@ -569,36 +514,23 @@ export default function App() {
               </div>
             </article>
             <article className="panel synthesis-panel">
-              <div className="section-label">
-                CLINICAL SYNTHESIS
-                <ShieldCheck size={15} />
-              </div>
-              <h3>A concise review, grounded in evidence.</h3>
+              <h3>Summary</h3>
               {result?.synthesis.status === "complete" ? (
                 <>
                   <p className="synthesis-text">{result.synthesis.text}</p>
                   <span className="source-caption">
-                    Generated by {result.synthesis.provider} · clinician review
-                    required
+                    AI-generated · clinician review required
                   </span>
                 </>
               ) : (
                 <div className="synthesis-empty">
-                  <span className="synthesis-line" />
                   <p>
                     {busy
-                      ? "Assembling the prediction and evidence…"
+                      ? "Preparing the assessment…"
                       : result
-                        ? "Prediction and evidence are ready. Cloud synthesis is unavailable."
-                        : "A three-sentence summary will appear after analysis."}
+                        ? "A summary is currently unavailable. You can still review the estimate, key factors, and evidence above."
+                        : "Your assessment summary will appear here."}
                   </p>
-                  {result && (
-                    <small>
-                      {result.synthesis.reason === "provider_not_configured"
-                        ? "Add the provider API key to the backend .env file and restart the server."
-                        : "The cloud provider did not return a usable summary. You can retry the analysis."}
-                    </small>
-                  )}
                 </div>
               )}
             </article>
@@ -606,13 +538,6 @@ export default function App() {
               <span>
                 <FlaskConical size={13} /> Research prototype · not a diagnosis
               </span>
-              {result && (
-                <span>
-                  <Check size={13} />
-                  {(result.timings_ms.total / 1000).toFixed(2)} s ·{" "}
-                  {result.prediction.model}
-                </span>
-              )}
             </footer>
           </section>
         </div>

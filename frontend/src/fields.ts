@@ -11,7 +11,7 @@ export type FieldSpec = {
 export const groups: { title: string; note: string; fields: FieldSpec[] }[] = [
   {
     title: "Patient characteristics",
-    note: "Original Cleveland feature definitions",
+    note: "Age, sex, and symptoms",
     fields: [
       { key: "age", label: "Age", unit: "years", min: 1, max: 120, step: 1 },
       {
@@ -73,7 +73,7 @@ export const groups: { title: string; note: string; fields: FieldSpec[] }[] = [
   },
   {
     title: "Exercise & diagnostic tests",
-    note: "Unknown vessel or thallium results are imputed",
+    note: "Missing vessel and thallium results use estimated values.",
     fields: [
       {
         key: "thalach",
