@@ -1,0 +1,15 @@
+[project]
+name = "aegishealth"
+version = "0.1.0"
+description = "CPU-first clinical decision support research prototype"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "numpy>=2.2,<3", "pandas>=2.2,<3", "scikit-learn>=1.6,<2",
+  "xgboost-cpu>=3.0,<4", "shap>=0.48,<1", "numba>=0.61,<1", "llvmlite>=0.44,<1", "joblib>=1.4,<2"
+]
+[dependency-groups]
+dev = ["pytest>=8,<10", "ruff>=0.11,<1"]
+[tool.pytest.ini_options]
+pythonpath = ["."]
+[tool.ruff]
+line-length = 100
