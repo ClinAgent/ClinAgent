@@ -64,3 +64,18 @@ def test_scanned_pdf_requires_ocr(tmp_path):
     writer.write(path)
     with pytest.raises(ValueError, match="OCR"):
         load_guideline(path)
+
+
+def test_excludes_bibliography_and_standalone_headers(guideline):
+    original = guideline.read_text()
+    guideline.write_text(original + "\n## REFERENCES\nUnrelated citation " * 20)
+    docs, _ = load_guideline(guideline)
+    assert "Unrelated citation" not in docs[-1].page_content
+    from langchain_core.documents import Document
+
+    header = Document(
+        page_content="| Recommendations for Adults With High Blood Cholesterol |\n| --- | --- |\n| COR | LOE | Recommendations |",
+        metadata=docs[0].metadata,
+    )
+    chunks = split_guideline([header, *docs])
+    assert not any(c.page_content == header.page_content for c in chunks)

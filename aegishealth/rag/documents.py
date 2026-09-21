@@ -74,12 +74,44 @@ def load_guideline(path: Path) -> tuple[list[Document], dict]:
         raise ValueError(
             "Expected the 2019 ACC/AHA primary-prevention Executive Summary. Check the file."
         )
-    return documents, {
+    # Bibliography entries are citations, not guideline recommendation evidence.
+    body = []
+    for document in documents:
+        match = re.search(r"(?mi)^\s*(?:#{1,6}\s+)?references\s*$", document.page_content)
+        if match:
+            if document.page_content[: match.start()].strip():
+                body.append(
+                    Document(
+                        page_content=document.page_content[: match.start()],
+                        metadata=document.metadata,
+                    )
+                )
+            break
+        body.append(document)
+    indexed_characters = sum(len(d.page_content) for d in body)
+    return body, {
         **metadata,
         "document_units": len(documents),
         "characters": len(combined),
+        "body_characters": indexed_characters,
         "blank_pdf_pages_skipped": skipped,
     }
+
+
+def _has_body_text(text: str) -> bool:
+    """Omit standalone headings/table headers without rewriting retained snippets."""
+    for line in text.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if re.match(r"^\|?\s*Recommendations for\b", line, re.IGNORECASE):
+            continue
+        cells = [cell.strip() for cell in line.split("|") if cell.strip()]
+        if cells and all(cell in {"COR", "LOE", "Recommendations"} for cell in cells):
+            continue
+        if re.search(r"[A-Za-z]{3}", line):
+            return True
+    return False
 
 
 def split_guideline(documents: list[Document]) -> list[Document]:
@@ -90,7 +122,7 @@ def split_guideline(documents: list[Document]) -> list[Document]:
         strip_whitespace=False,
         length_function=len,
     )
-    chunks = [d for d in splitter.split_documents(documents) if d.page_content.strip()]
+    chunks = [d for d in splitter.split_documents(documents) if _has_body_text(d.page_content)]
     if len(chunks) < 2:
         raise ValueError("At least two nonempty guideline chunks are required")
     for index, chunk in enumerate(chunks):
