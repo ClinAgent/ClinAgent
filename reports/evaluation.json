@@ -1,0 +1,185 @@
+{
+  "ml": {
+    "model": "logistic_c0.1",
+    "holdout_rows": 61,
+    "threshold": 0.5,
+    "accuracy": 0.8852459016393442,
+    "precision": 0.8387096774193549,
+    "recall": 0.9285714285714286,
+    "f1": 0.8813559322033898,
+    "roc_auc": 0.9610389610389611,
+    "roc_auc_bootstrap_95_percent_interval": [
+      0.9021474498692241,
+      0.9989247311827957
+    ],
+    "brier": 0.08686136414914349,
+    "confusion_matrix_tn_fp_fn_tp": [
+      28,
+      5,
+      2,
+      26
+    ],
+    "dataset_sha256": "a74b7efa387bc9d108d7d0115d831fe9b414b29ae7124f331b622b4efa0427c8",
+    "used_for_selection": false
+  },
+  "rag": {
+    "k": 2,
+    "mean_precision_at_2": 0.5833333333333334,
+    "annotation_method": "Source-grounded seed judgments made during implementation, not independent clinician annotations. Relevant means the chunk directly answers the stated question, including its age or disease qualifiers. All indexed text was searched for corresponding recommendation clauses. This small diagnostic set includes the known aspirin failure and is not an unbiased test corpus.",
+    "note": "Singleton relevant sets can attain at most 0.5 Precision@2; this is a small development diagnostic, not clinical validation.",
+    "queries": [
+      {
+        "id": "activity",
+        "query": "How much moderate intensity physical activity should adults do each week?",
+        "relevant_chunk_ids": [
+          "695bb99704d50699cee4ee2b1459591f440941706f44c3698adbf53ac22b8689",
+          "3f39c4638c6b1844d06518338386686d731784d583037a1af8361da128c23285",
+          "fd271c8e88264ca0f2aaee731ea211e38ea89b087094025f0bca18a6a0cf92df"
+        ],
+        "retrieved_chunk_ids": [
+          "695bb99704d50699cee4ee2b1459591f440941706f44c3698adbf53ac22b8689",
+          "3f39c4638c6b1844d06518338386686d731784d583037a1af8361da128c23285"
+        ],
+        "precision_at_2": 1.0
+      },
+      {
+        "id": "aspirin_age",
+        "query": "Should adults over 70 routinely take aspirin for primary prevention?",
+        "relevant_chunk_ids": [
+          "b475ec17d2f188254059b5b2a20b6b6d26aa5110faf1ce7005c71cdc36d74fa9"
+        ],
+        "retrieved_chunk_ids": [
+          "f13a3a65c8509235dd2e73e3b351e03757c39cd35f69c485869279dcabbf9bb8",
+          "8841b049952b7c2d3aa0a3335f8460fe88b734b155f4da8592c828fe642f2965"
+        ],
+        "precision_at_2": 0.0
+      },
+      {
+        "id": "aspirin_bleeding",
+        "query": "Aspirin primary prevention in adults with increased bleeding risk",
+        "relevant_chunk_ids": [
+          "b475ec17d2f188254059b5b2a20b6b6d26aa5110faf1ce7005c71cdc36d74fa9",
+          "f13a3a65c8509235dd2e73e3b351e03757c39cd35f69c485869279dcabbf9bb8"
+        ],
+        "retrieved_chunk_ids": [
+          "f13a3a65c8509235dd2e73e3b351e03757c39cd35f69c485869279dcabbf9bb8",
+          "b475ec17d2f188254059b5b2a20b6b6d26aa5110faf1ce7005c71cdc36d74fa9"
+        ],
+        "precision_at_2": 1.0
+      },
+      {
+        "id": "diet",
+        "query": "Which dietary pattern is recommended to reduce cardiovascular risk?",
+        "relevant_chunk_ids": [
+          "ce937fa0400ff70e75c3ad0b84cfe70d7285ac973fdd5193c01379b567c0f8cc",
+          "490f776e2fe9509043352b6cd91feca91df10823aa44069cf8f5dbc18cbba8f0",
+          "ef480f58eff58eb7bee5611ef677d617d2804dd05765f36e54eea22dadf01c35",
+          "96041466e762777997d7c9f02e428a341a79612609f9020f7ec77643fab4eff8"
+        ],
+        "retrieved_chunk_ids": [
+          "edaaf88f8121b7853ff0ab267b627b077e0216dacf0beede698ecfc6967608b3",
+          "fad7fe39f326e6403c65035d1a705aebaff95919c7c80d93ed345735ae43d89e"
+        ],
+        "precision_at_2": 0.0
+      },
+      {
+        "id": "obesity",
+        "query": "Counseling calorie restriction and weight loss for adults with obesity",
+        "relevant_chunk_ids": [
+          "ce937fa0400ff70e75c3ad0b84cfe70d7285ac973fdd5193c01379b567c0f8cc",
+          "185562505ccfc528eb6c88d31ca19b84299fbcec47c703270abc6d0327586311",
+          "34823840212db4ce62017428d1862c6d6405399009224f531e113724f880cea3",
+          "dbee822f72389aedc117826708f911f0007c59d590371b8a72f23b28efd64498"
+        ],
+        "retrieved_chunk_ids": [
+          "34823840212db4ce62017428d1862c6d6405399009224f531e113724f880cea3",
+          "ce937fa0400ff70e75c3ad0b84cfe70d7285ac973fdd5193c01379b567c0f8cc"
+        ],
+        "precision_at_2": 1.0
+      },
+      {
+        "id": "ldl",
+        "query": "What does the guideline recommend for LDL cholesterol at least 190 mg/dL in adults aged 20 to 75?",
+        "relevant_chunk_ids": [
+          "d6463cabd14009d58477cdf440377038e5d2b76494361f953f7ff4d34298433d"
+        ],
+        "retrieved_chunk_ids": [
+          "d6463cabd14009d58477cdf440377038e5d2b76494361f953f7ff4d34298433d",
+          "a63d8e59f1f6b55f16379243857d76c4627389f3330981f23990b2c7dd38d4f9"
+        ],
+        "precision_at_2": 0.5
+      }
+    ]
+  },
+  "end_to_end": {
+    "target_seconds": 3,
+    "requests": 10,
+    "complete_requests": 0,
+    "complete_p50_seconds": null,
+    "complete_p95_seconds": null,
+    "target_met": false,
+    "criterion": "All requested end-to-end calls must complete with cloud synthesis in under three seconds; no partial response counts as success.",
+    "samples": [
+      {
+        "seconds": 0.08036552900011884,
+        "complete": false,
+        "synthesis_reason": "provider_not_configured",
+        "http_status": 200
+      },
+      {
+        "seconds": 0.07384194200130878,
+        "complete": false,
+        "synthesis_reason": "provider_not_configured",
+        "http_status": 200
+      },
+      {
+        "seconds": 0.06028194100508699,
+        "complete": false,
+        "synthesis_reason": "provider_not_configured",
+        "http_status": 200
+      },
+      {
+        "seconds": 0.060568314998818096,
+        "complete": false,
+        "synthesis_reason": "provider_not_configured",
+        "http_status": 200
+      },
+      {
+        "seconds": 0.07428189200436464,
+        "complete": false,
+        "synthesis_reason": "provider_not_configured",
+        "http_status": 200
+      },
+      {
+        "seconds": 0.05986943699826952,
+        "complete": false,
+        "synthesis_reason": "provider_not_configured",
+        "http_status": 200
+      },
+      {
+        "seconds": 0.06455311500030803,
+        "complete": false,
+        "synthesis_reason": "provider_not_configured",
+        "http_status": 200
+      },
+      {
+        "seconds": 0.06928638400131604,
+        "complete": false,
+        "synthesis_reason": "provider_not_configured",
+        "http_status": 200
+      },
+      {
+        "seconds": 0.0589633240015246,
+        "complete": false,
+        "synthesis_reason": "provider_not_configured",
+        "http_status": 200
+      },
+      {
+        "seconds": 0.056204748994787224,
+        "complete": false,
+        "synthesis_reason": "provider_not_configured",
+        "http_status": 200
+      }
+    ]
+  }
+}

@@ -1,9 +1,79 @@
 # AegisHealth / ClinAgent
 
-CPU-first, explainable clinical decision support research prototype. Phases 1 and 2
-are implemented: Cleveland model comparison, SHAP explanations, and local guideline
-retrieval. FastAPI, the React dashboard, and end-to-end evaluation remain gated by
-the requested phase-by-phase confirmation.
+CPU-first clinical decision-support research prototype with a FastAPI analysis
+pipeline, a React clinical review dashboard, and reproducible evaluation. All five
+implementation phases are present. **Live cloud synthesis and the complete
+three-second latency target remain unverified until a provider key is configured.**
+
+## Start the complete application
+
+From the repository root, with Python 3.12/3.13, uv and Node.js 22.12+:
+
+```bash
+uv sync --locked --extra rag --extra api
+npm --prefix frontend ci
+npm --prefix frontend run build
+# On a fresh checkout only, copy .env.example to .env and add your provider key.
+uv run --extra rag --extra api uvicorn aegishealth.api.app:app --host 127.0.0.1 --port 8000 --no-access-log
+```
+
+Open [the dashboard](http://127.0.0.1:8000). This server serves the built frontend
+and API from the same origin. The local workspace already contains model artifacts
+and the guideline index. On a fresh checkout, run the training and ingestion
+commands below before starting the API. Keep one backend worker on low-end devices
+because each worker loads its own models.
+
+Set `LLM_PROVIDER=groq` and `GROQ_API_KEY` in `.env`, or use
+`LLM_PROVIDER=openai` with `OPENAI_API_KEY`. Restart the server after changing
+configuration. Groq defaults to cloud-hosted `openai/gpt-oss-20b`; OpenAI defaults
+to `gpt-4.1-mini`. `LLM_MODEL` overrides either default for an account-enabled
+model. No generative model weights are downloaded locally. Never put API keys in
+frontend variables. A missing key yields a clearly labeled partial result with
+real model/SHAP/evidence output and no fabricated summary.
+
+For frontend development, run `npm --prefix frontend run dev` alongside the API;
+Vite proxies `/analyze` and `/health` to port 8000. The optional test suite runs
+with `npm --prefix frontend run test:e2e` after `npx playwright install chromium`
+inside `frontend/`; it expects the real backend on port 8000.
+
+This is a loopback-bound research application, without production authentication,
+patient-record storage, or a claim of clinical readiness. The UI starts empty;
+“Load example” fills a synthetic case without submitting it. Patient measurements,
+model outputs and evidence are sent to the configured cloud provider only when
+analysis is requested and a key is available. No patient values are stored in
+browser storage or echoed in validation errors.
+
+## Analysis API
+
+`POST /analyze` accepts an object containing the 13 fields listed below. All fields
+must be supplied; `ca` and `thal` may explicitly be null. Numeric strings, booleans,
+extra keys, invalid categories, nonfinite numbers and out-of-range values are
+rejected with HTTP 422. `GET /health` reports readiness and configuration, not a
+verified cloud connection. OpenAPI documentation is at `/docs`.
+
+The orchestrator runs CPU prediction and SHAP, constructs a query from observed
+values of the top three contributing features, retrieves two passages, and calls
+the configured cloud provider. Startup warms SHAP and MiniLM. Local CPU work is
+serialized and excess overlapping requests receive HTTP 429 instead of an
+unbounded CPU queue. Cloud I/O is asynchronous with a configured timeout.
+
+The response includes `prediction`, `retrieval_query`, `evidence`, `synthesis`,
+`timings_ms`, `analysis_id`, and `status` (`complete` or `partial`). The provider is
+asked for three sentences with evidence references; output validation rejects
+malformed JSON, incomplete generations, extra sentences and invalid evidence IDs.
+This checks structure and reference existence, not clinical correctness or
+semantic entailment. Retrieved documents are treated as untrusted data. Provider
+failures return no summary and an explicit machine-readable reason.
+
+```mermaid
+flowchart LR
+  UI[React dashboard] --> API[FastAPI orchestrator]
+  API --> ML[Saved classifier + SHAP]
+  ML --> RAG[CPU MiniLM + local Chroma]
+  RAG --> LLM[Groq or OpenAI cloud synthesis]
+  LLM --> JSON[Unified response]
+  JSON --> UI
+```
 
 ## Run Phase 1
 
@@ -110,8 +180,9 @@ embedding batches contain 16 chunks.
 
 LangChain splits the text into at most 500 characters with a target overlap of
 50 characters, preserving paragraph/word boundaries where possible. Actual overlap
-can be smaller at separators and page boundaries. Standalone headings and the
-bibliography are excluded from retrieval; the saved source stays complete.
+can be smaller at separators and page boundaries. Standalone headings, publication/staff material, and the bibliography are excluded
+from retrieval; the PDF-derived text also excludes preamble/methodology sections
+when their boundary markers are present. The current index contains 140 chunks; the saved source stays complete.
 PDF inputs preserve one-based PDF page numbers and page labels. TXT inputs use
 character offsets without inventing pagination.
 
@@ -137,19 +208,43 @@ labeled Precision@k evaluation remains in Phase 5. The future synthesis layer
 must preserve the conditions in retrieved text and must not infer patient facts
 such as diabetes or LDL cholesterol from absent inputs.
 
-## Next phases
+## Phase 5 evaluation
 
-1. Phase 1: complete ML comparison and explainability.
-2. Phase 2: complete LangChain/CPU MiniLM/Chroma retrieval; awaiting confirmation for Phase 3.
-3. Phase 3: FastAPI orchestration with a cloud LLM only.
-4. Phase 4: React/Vite/Tailwind/Recharts dashboard using the requested frontend-design skill.
-5. Phase 5: untouched-holdout metrics, labeled retrieval evaluation and measured end-to-end latency.
+```bash
+uv run --extra rag --extra api python -m aegishealth.evaluate --api-url http://127.0.0.1:8000 --requests 10
+uv run --extra rag --extra api pytest -q
+uv run --extra rag --extra api ruff check aegishealth tests
+```
+
+The evaluator verifies the dataset checksum and disjoint saved split, scores the
+61 untouched holdout records, evaluates six source-grounded retrieval judgments,
+and times actual `/analyze` HTTP calls. Only complete responses with cloud synthesis
+count toward the three-second target. The target passes only when every requested
+call succeeds in under three seconds. Partial responses never count as success.
+
+Holdout: accuracy **0.8852**, precision **0.8387**, recall **0.9286**, F1 **0.8814**,
+ROC-AUC **0.9610**. Diagnostic retrieval Precision@2: **0.5833**. These small-sample
+results do not establish clinical performance. The relevance judgments are
+implementation-time seed labels, not independent clinician annotations. The known
+aspirin-age miss remains. [Final validation](reports/final_validation.md) explains
+methods, limitations, and why live cloud latency is currently unverified;
+[raw metrics](reports/evaluation.json) preserve each measurement.
 
 The [2019 ACC/AHA Executive Summary](https://www.ahajournals.org/doi/10.1161/CIR.0000000000000677)
-has been downloaded as a PDF-derived TXT in `data/knowledge_base/`. The supplied
-[DOI ending in 0678](https://www.ahajournals.org/doi/10.1161/CIR.0000000000000678)
-is the full guideline; `0677` is its companion Executive Summary.
-See [document preparation](data/knowledge_base/README.md).
+is saved as a PDF-derived TXT in `data/knowledge_base/`. Your DOI ending in `0678`
+is the full guideline, while `0677` is its companion Executive Summary.
+See [document preparation](data/knowledge_base/README.md). The earlier Phase 1/2
+reports are historical snapshots; the integrated index now excludes additional
+nonclinical sections.
+
+## Implementation references
+
+Current guidance was checked against [FastAPI lifespan](https://fastapi.tiangolo.com/advanced/events/),
+[Tailwind with Vite](https://tailwindcss.com/docs/installation/using-vite),
+[Groq's compatible API](https://console.groq.com/docs/openai),
+[Groq GPT-OSS 20B](https://console.groq.com/docs/model/openai/gpt-oss-20b), and
+[OpenAI chat completions](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create).
+The UI design plan is in [frontend/DESIGN.md](frontend/DESIGN.md).
 
 ## Scope and attribution
 

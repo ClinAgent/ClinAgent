@@ -60,3 +60,49 @@ test("network failures do not leave stale or fabricated results", async ({
     page.getByRole("button", { name: "Analyze case", exact: true }),
   ).toBeEnabled();
 });
+
+test("renders a complete synthesis response from a test-only provider fixture", async ({
+  page,
+  request,
+}) => {
+  const response = await request.post("http://127.0.0.1:8000/analyze", {
+    data: {
+      age: 63,
+      sex: 1,
+      cp: 4,
+      trestbps: 145,
+      chol: 233,
+      fbs: 1,
+      restecg: 2,
+      thalach: 150,
+      exang: 1,
+      oldpeak: 2.3,
+      slope: 2,
+      ca: 0,
+      thal: 7,
+    },
+  });
+  expect(response.ok()).toBeTruthy();
+  const result = await response.json();
+  const summary =
+    "This is a test-only research summary. Contributors are associations. Review evidence with a clinician [E1].";
+  await page.route("**/analyze", (route) =>
+    route.fulfill({
+      json: {
+        ...result,
+        status: "complete",
+        synthesis: {
+          ...result.synthesis,
+          status: "complete",
+          reason: null,
+          text: summary,
+        },
+      },
+    }),
+  );
+  await page.goto("/");
+  await page.getByRole("button", { name: "Load example" }).click();
+  await page.getByRole("button", { name: "Analyze case", exact: true }).click();
+  await expect(page.getByText(summary, { exact: true })).toBeVisible();
+  await expect(page.getByText("REVIEW READY", { exact: true })).toBeVisible();
+});

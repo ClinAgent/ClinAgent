@@ -1,0 +1,12 @@
+{
+  "source_sha256": "4e5d13566e0eb2522789819554308f3396edab1be25e2090503542f019c364f5",
+  "annotation_method": "Source-grounded seed judgments made during implementation, not independent clinician annotations. Relevant means the chunk directly answers the stated question, including its age or disease qualifiers. All indexed text was searched for corresponding recommendation clauses. This small diagnostic set includes the known aspirin failure and is not an unbiased test corpus.",
+  "queries": [
+    {"id":"activity","query":"How much moderate intensity physical activity should adults do each week?","relevant_chunk_ids":["695bb99704d50699cee4ee2b1459591f440941706f44c3698adbf53ac22b8689","3f39c4638c6b1844d06518338386686d731784d583037a1af8361da128c23285","fd271c8e88264ca0f2aaee731ea211e38ea89b087094025f0bca18a6a0cf92df"]},
+    {"id":"aspirin_age","query":"Should adults over 70 routinely take aspirin for primary prevention?","relevant_chunk_ids":["b475ec17d2f188254059b5b2a20b6b6d26aa5110faf1ce7005c71cdc36d74fa9"]},
+    {"id":"aspirin_bleeding","query":"Aspirin primary prevention in adults with increased bleeding risk","relevant_chunk_ids":["b475ec17d2f188254059b5b2a20b6b6d26aa5110faf1ce7005c71cdc36d74fa9","f13a3a65c8509235dd2e73e3b351e03757c39cd35f69c485869279dcabbf9bb8"]},
+    {"id":"diet","query":"Which dietary pattern is recommended to reduce cardiovascular risk?","relevant_chunk_ids":["ce937fa0400ff70e75c3ad0b84cfe70d7285ac973fdd5193c01379b567c0f8cc","490f776e2fe9509043352b6cd91feca91df10823aa44069cf8f5dbc18cbba8f0","ef480f58eff58eb7bee5611ef677d617d2804dd05765f36e54eea22dadf01c35","96041466e762777997d7c9f02e428a341a79612609f9020f7ec77643fab4eff8"]},
+    {"id":"obesity","query":"Counseling calorie restriction and weight loss for adults with obesity","relevant_chunk_ids":["ce937fa0400ff70e75c3ad0b84cfe70d7285ac973fdd5193c01379b567c0f8cc","185562505ccfc528eb6c88d31ca19b84299fbcec47c703270abc6d0327586311","34823840212db4ce62017428d1862c6d6405399009224f531e113724f880cea3","dbee822f72389aedc117826708f911f0007c59d590371b8a72f23b28efd64498"]},
+    {"id":"ldl","query":"What does the guideline recommend for LDL cholesterol at least 190 mg/dL in adults aged 20 to 75?","relevant_chunk_ids":["d6463cabd14009d58477cdf440377038e5d2b76494361f953f7ff4d34298433d"]}
+  ]
+}

@@ -16,8 +16,9 @@ PDF extraction can affect column order, tables and equations; use the linked
 original to verify consequential details.
 
 The complete document is kept on disk. Ingestion excludes text from the
-References heading onward and omits heading-only chunks from the searchable
-index. No guideline text is committed to Git. Source identity checks are basic
+References/staff heading onward, publication front matter, and heading-only
+chunks from the searchable index. For the downloaded text, the preamble and
+methodology are excluded using section boundaries while preserving source offsets. No guideline text is committed to Git. Source identity checks are basic
 screening, not an authenticity or completeness guarantee.
 
 The user-added `heart+disease/` folder contains the UCI tabular dataset and is

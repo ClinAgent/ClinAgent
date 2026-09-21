@@ -11,7 +11,7 @@ ENDPOINTS = {
     "groq": "https://api.groq.com/openai/v1/chat/completions",
     "openai": "https://api.openai.com/v1/chat/completions",
 }
-DEFAULT_MODELS = {"groq": "llama-3.3-70b-versatile", "openai": "gpt-4.1-mini"}
+DEFAULT_MODELS = {"groq": "openai/gpt-oss-20b", "openai": "gpt-4.1-mini"}
 SYSTEM = """You write a research clinical decision-support summary, not a prescription.
 Return only JSON with sentences (exactly 3 strings, each one sentence) and evidence_ids
 (a list of the supplied E1/E2 identifiers you actually use).
@@ -85,7 +85,12 @@ class CloudSynthesizer:
                         {"role": "user", "content": json.dumps(data, allow_nan=False)},
                     ],
                     "response_format": {"type": "json_object"},
-                    "max_completion_tokens": 450,
+                    "max_completion_tokens": 1024,
+                    **(
+                        {"reasoning_effort": "low"}
+                        if self.provider == "groq" and self.model.startswith("openai/gpt-oss")
+                        else {}
+                    ),
                 },
                 timeout=self.timeout,
             )
