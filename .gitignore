@@ -9,3 +9,10 @@ data/raw/
 artifacts/
 data/knowledge_base/*
 !data/knowledge_base/README.md
+
+frontend/node_modules/
+frontend/dist/
+frontend/test-results/
+frontend/playwright-report/
+.env.*
+!.env.example
