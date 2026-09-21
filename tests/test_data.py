@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import pytest
+
 from aegishealth.data import FEATURES, preprocessor, validate
 
 PATIENT = [63, 1, 4, 145, 233, 1, 2, 150, 1, 2.3, 2, 0, 7]
