@@ -33,6 +33,13 @@ test("intake validates before sending and clears results when edited", async ({
     fullPage: true,
   });
   await page.setViewportSize({ width: 390, height: 844 });
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => document.documentElement.scrollWidth <= window.innerWidth,
+      ),
+    )
+    .toBeTruthy();
   await page.screenshot({
     path: "../artifacts/dashboard-mobile.png",
     fullPage: true,

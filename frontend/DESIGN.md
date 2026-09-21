@@ -1,71 +1,31 @@
-# AegisHealth clinical review workspace
+# AegisHealth — patient worksheet and assessment report
 
-Audience: a clinical researcher reviewing one synthetic or consented case. Single
-job: compare observed patient measurements, model reasoning and retrieved evidence
-before interpreting the generated summary.
+Audience: clinical researchers reviewing a synthetic or consented cardiovascular
+case. Job: enter observed measurements, then inspect the model and its evidence.
 
-Tokens: paper #FFFFFF, workspace #F3F6F7, ink #203238, slate #60757D,
-clinical teal #166C66, rising-contribution rose #B04A57. White/gray dominate;
-semantic color distinguishes signed contributions, not validated risk strata.
+New direction: a horizontal worksheet instead of the former narrow intake rail.
+A navy report panel anchors the estimate; the signed explanation stays on paper.
+This is a clinical review document, with working navigation to its three sections.
 
-Type: IBM Plex Sans for headings and the probability number, Source Sans 3 for
-forms and evidence, IBM Plex Mono for units and provenance. All fonts are bundled.
+Palette: navy #18324F, blue #285ED2, mist #EEF2F7, paper #FFFFFF,
+slate #62748B, rose #B04A57. Blue marks actions; rose marks positive contributions.
+Typography: IBM Plex Sans for titles at 38/24/19px, Source Sans 3 for reading and
+controls at 14–16px, IBM Plex Mono only for measurement values.
 
-Layout: a quiet application header and research label above a 360px intake rail
-and a wider results workspace. On mobile these become one continuous reading
-order. No marketing hero or fake patient activity.
+[ AegisHealth         Patient details · Results · Evidence ]
+[ Cardiovascular assessment                              ]
+[ patient basics | resting measurements | diagnostic tests ]
+[ privacy note                           Analyze case     ]
+[ navy probability panel | signed contribution chart     ]
+[ clinical evidence                | assessment summary  ]
 
-[ AegisHealth                         research workspace ]
-[ cardiovascular review             service availability ]
-[ patient intake ][ probability gauge | signed SHAP chart ]
-[ observed data  ][ evidence passages, DOI and source     ]
-[ analyze       ][ three-sentence synthesis              ]
+Signature: the worksheet-to-report transition, with a navy estimate panel
+visually distinct from white source evidence. Do not add decorative heartbeat
+lines, invented patient records, or marketing claims. Navigation reflects actual
+page sections. Evidence stays expanded; exact-source details remain optional.
 
-Signature: an evidence bracket linking the model's signed contributions to exact
-source passages, styled as an annotated clinical worksheet. Spend visual emphasis
-on this reasoning chain, not decoration. Gauge stays neutral until real results;
-no invented low/moderate/high clinical cutoffs.
-
-Critique: a generic analytics layout would overemphasize a giant risk percentage
-and hide missing evidence. This layout keeps source text and model limitations
-visible beside the probability. A narrow teal measurement rail, spacious panels
-and grouped fieldsets evoke a diagnostic instrument rather than a newspaper.
-
-States: initially empty; explicit synthetic-example fill (never auto-submit);
-loading; partial result without cloud synthesis; complete; validation and network
-errors. Editing fields invalidates old results. No browser patient persistence.
-Focus, reduced motion, mobile layout and accessible chart alternatives are required.
-
-## Simplified assessment interface
-
-The previous view repeated technical labels, service status, and explanatory
-headlines at every level. These competed with the patient measurements and made
-small text harder to scan. The revised view uses one descriptive page title,
-sentence-case section headings, and no service configuration banner. Setup
-instructions belong in project documentation. An unavailable summary remains
-clearly identified beside its results without exposing environment settings.
-
-Keep the existing restrained teal, white, and slate palette. Use a 350px form rail,
-42px controls, larger supporting text, and flat bordered panels. Remove numbered
-field groups, redundant section labels, and decorative summary accents. Preserve
-source passages, uncertainty, consent information, keyboard focus, and a single
-mobile reading order. No additional ornament or marketing copy is needed.
-
-## shadcn component refinement
-
-Use actual shadcn source components for controls, cards, status badges, alerts,
-and expandable detail. Preserve the clinical teal #166C66, paper #FFFFFF,
-workspace #F3F6F7, ink #203238, slate #60757D, and rose #B04A57 palette.
-IBM Plex Sans headings and Source Sans 3 body remain the typography system.
-The signature is a paired estimate and explanation above source-backed evidence;
-a compact evidence worksheet gives tables and citations room to breathe.
-
-[ patient details ][ disease probability | key factors ]
-[ grouped inputs  ][ clinical evidence: formatted passages ]
-[ analyze case    ][ summary and research context ]
-
-Avoid adding tabs that hide required results or unrelated dashboard statistics.
-Use rounded cards with consistent header spacing, clearer input focus states,
-and subtle teal emphasis. Replace raw Markdown with semantic tables, headings,
-lists, and sanitized superscripts. Preserve exact source text in a disclosure
-for inspection; long tables scroll within their card on small screens.
+Critique: another sidebar dashboard would reproduce the rejected layout.
+A full-width worksheet gives the actual measurements priority and makes the
+result a separate readable report. Preserve shadcn controls, all required inputs,
+honest unavailable states, sanitized Markdown, mobile reading order, keyboard
+focus, and reduced motion. At narrow widths, collapse columns without hiding data.

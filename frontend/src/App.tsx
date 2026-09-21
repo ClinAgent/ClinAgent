@@ -147,6 +147,11 @@ export default function App() {
         </a>
         <div className="header-divider" />
         <span className="header-label">Clinical decision support</span>
+        <nav className="workspace-nav" aria-label="Assessment sections">
+          <a href="#patient-form">Patient details</a>
+          <a href="#assessment-results">Results</a>
+          <a href="#clinical-evidence">Evidence</a>
+        </nav>
       </header>
       <main className="workspace">
         <div className="page-heading">
@@ -296,6 +301,7 @@ export default function App() {
           </Card>
           <section
             className="results"
+            id="assessment-results"
             ref={resultsRef}
             tabIndex={-1}
             aria-label="Analysis results"
@@ -348,8 +354,8 @@ export default function App() {
                       />
                       <RadialBar
                         dataKey="value"
-                        background={{ fill: "#E6ECEE" }}
-                        fill={probability >= 50 ? "#B04A57" : "#166C66"}
+                        background={{ fill: "#354D67" }}
+                        fill={probability >= 50 ? "#E7A1AD" : "#8BB9FF"}
                         isAnimationActive={false}
                         cornerRadius={5}
                       />
@@ -432,7 +438,7 @@ export default function App() {
                             {contributions.map((c) => (
                               <Cell
                                 key={c.feature}
-                                fill={c.points > 0 ? "#B04A57" : "#166C66"}
+                                fill={c.points > 0 ? "#B04A57" : "#285ED2"}
                               />
                             ))}
                           </Bar>
@@ -494,7 +500,7 @@ export default function App() {
                 </p>
               </Card>
             </div>
-            <Card className="panel evidence-panel">
+            <Card className="panel evidence-panel" id="clinical-evidence">
               <div className="evidence-title">
                 <h3>Clinical evidence</h3>
                 <Badge variant="outline">2019 ACC/AHA guideline</Badge>
