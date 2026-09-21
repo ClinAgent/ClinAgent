@@ -74,20 +74,51 @@ def load_guideline(path: Path) -> tuple[list[Document], dict]:
         raise ValueError(
             "Expected the 2019 ACC/AHA primary-prevention Executive Summary. Check the file."
         )
-    # Bibliography entries are citations, not guideline recommendation evidence.
+    # Restrict the evidence corpus to clinical content when article boundaries exist.
+    start_pattern = r"(?mi)^\s*(?:#{1,6}\s+)?TOP 10 TAKE-HOME MESSAGES[^\n]*"
+    start_unit = next(
+        (i for i, d in enumerate(documents) if re.search(start_pattern, d.page_content)), 0
+    )
     body = []
-    for document in documents:
-        match = re.search(r"(?mi)^\s*(?:#{1,6}\s+)?references\s*$", document.page_content)
-        if match:
-            if document.page_content[: match.start()].strip():
-                body.append(
+    for i, document in enumerate(documents[start_unit:], start=start_unit):
+        begin = re.search(start_pattern, document.page_content) if i == start_unit else None
+        offset = begin.start() if begin else 0
+        text = document.page_content[offset:]
+        end = re.search(
+            r"(?mi)^\s*(?:#{1,6}\s+)?(?:references|ACC/AHA TASK FORCE MEMBERS|PRESIDENTS AND STAFF)\s*$",
+            text,
+        )
+        if end:
+            text = text[: end.start()]
+        if text.strip():
+            body.append(
+                Document(page_content=text, metadata={**document.metadata, "source_offset": offset})
+            )
+        if end:
+            break
+    # The PDF-derived TXT keeps both markers in one document. Keep source offsets
+    # for each retained segment; do not rewrite or concatenate separated passages.
+    clinical_body = []
+    for document in body:
+        preamble = re.search(r"(?mi)^\s*#{1,6}\s+PREAMBLE\s*$", document.page_content)
+        recommendations = re.search(r"(?mi)^\s*#{1,6}\s+2\.\s+OVERARCHING", document.page_content)
+        if preamble and recommendations and recommendations.start() > preamble.start():
+            for left, right in [
+                (0, preamble.start()),
+                (recommendations.start(), len(document.page_content)),
+            ]:
+                clinical_body.append(
                     Document(
-                        page_content=document.page_content[: match.start()],
-                        metadata=document.metadata,
+                        page_content=document.page_content[left:right],
+                        metadata={
+                            **document.metadata,
+                            "source_offset": document.metadata.get("source_offset", 0) + left,
+                        },
                     )
                 )
-            break
-        body.append(document)
+        else:
+            clinical_body.append(document)
+    body = clinical_body
     indexed_characters = sum(len(d.page_content) for d in body)
     return body, {
         **metadata,
@@ -127,6 +158,7 @@ def split_guideline(documents: list[Document]) -> list[Document]:
         raise ValueError("At least two nonempty guideline chunks are required")
     for index, chunk in enumerate(chunks):
         chunk.metadata["chunk_index"] = index
+        chunk.metadata["start_index"] += chunk.metadata.get("source_offset", 0)
         identity = f"{chunk.metadata['source_sha256']}:{chunk.metadata.get('page', 0)}:{chunk.metadata['start_index']}:{chunk.page_content}"
         chunk.metadata["chunk_id"] = hashlib.sha256(identity.encode()).hexdigest()
     return chunks

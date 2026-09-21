@@ -79,3 +79,35 @@ def test_excludes_bibliography_and_standalone_headers(guideline):
     )
     chunks = split_guideline([header, *docs])
     assert not any(c.page_content == header.page_content for c in chunks)
+
+
+def test_front_matter_is_removed_without_losing_source_offsets(guideline):
+    original = guideline.read_text()
+    text = (
+        HEADER
+        + "\nAffiliation information.\n## TOP 10 TAKE-HOME MESSAGES\n"
+        + original
+        + "\n## ACC/AHA TASK FORCE MEMBERS\nStaff information."
+    )
+    guideline.write_text(text)
+    docs, _ = load_guideline(guideline)
+    chunks = split_guideline(docs)
+    for chunk in chunks:
+        offset = chunk.metadata["start_index"]
+        assert text[offset : offset + len(chunk.page_content)] == chunk.page_content
+        assert "Affiliation information" not in chunk.page_content
+        assert "Staff information" not in chunk.page_content
+
+
+def test_methodology_is_not_retrieved_as_clinical_evidence(guideline):
+    text = (
+        guideline.read_text()
+        + "\n## PREAMBLE\nNonclinical methodology.\n# 2. OVERARCHING\n"
+        + ("Patient-centered assessment and evidence. " * 80)
+    )
+    guideline.write_text(text)
+    documents, _ = load_guideline(guideline)
+    for chunk in split_guideline(documents):
+        offset = chunk.metadata["start_index"]
+        assert text[offset : offset + len(chunk.page_content)] == chunk.page_content
+        assert "Nonclinical methodology" not in chunk.page_content

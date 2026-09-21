@@ -14,7 +14,7 @@ from aegishealth.rag.documents import CHUNK_OVERLAP, CHUNK_SIZE, load_guideline,
 from aegishealth.rag.embeddings import MODEL_NAME, MODEL_REVISION, make_embeddings
 
 DEFAULT_INDEX = Path("artifacts/chroma")
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 4
 
 
 def _client(directory):

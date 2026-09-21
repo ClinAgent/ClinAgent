@@ -40,7 +40,7 @@ def clinical_query(patient, prediction):
             continue  # never describe an imputed value as observed
         display = CODES.get(feature, {}).get(value, value)
         terms.append(f"{LABELS[feature]}: {display}")
-    return "Cardiovascular prevention guideline; " + "; ".join(terms)
+    return "ASCVD risk assessment and prevention; " + "; ".join(terms)
 
 
 class LocalAgents:
