@@ -50,3 +50,22 @@ Keep the existing restrained teal, white, and slate palette. Use a 350px form ra
 field groups, redundant section labels, and decorative summary accents. Preserve
 source passages, uncertainty, consent information, keyboard focus, and a single
 mobile reading order. No additional ornament or marketing copy is needed.
+
+## shadcn component refinement
+
+Use actual shadcn source components for controls, cards, status badges, alerts,
+and expandable detail. Preserve the clinical teal #166C66, paper #FFFFFF,
+workspace #F3F6F7, ink #203238, slate #60757D, and rose #B04A57 palette.
+IBM Plex Sans headings and Source Sans 3 body remain the typography system.
+The signature is a paired estimate and explanation above source-backed evidence;
+a compact evidence worksheet gives tables and citations room to breathe.
+
+[ patient details ][ disease probability | key factors ]
+[ grouped inputs  ][ clinical evidence: formatted passages ]
+[ analyze case    ][ summary and research context ]
+
+Avoid adding tabs that hide required results or unrelated dashboard statistics.
+Use rounded cards with consistent header spacing, clearer input focus states,
+and subtle teal emphasis. Replace raw Markdown with semantic tables, headings,
+lists, and sanitized superscripts. Preserve exact source text in a disclosure
+for inspection; long tables scroll within their card on small screens.

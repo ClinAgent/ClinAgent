@@ -769,3 +769,223 @@ input::placeholder {
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* shadcn semantic tokens retain the clinical palette. */
+@theme inline {
+  --color-background: #f3f6f7;
+  --color-foreground: #203238;
+  --color-card: #ffffff;
+  --color-card-foreground: #203238;
+  --color-primary: #166c66;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #e5f1ef;
+  --color-secondary-foreground: #166c66;
+  --color-muted: #f3f6f7;
+  --color-muted-foreground: #60757d;
+  --color-accent: #edf5f3;
+  --color-accent-foreground: #166c66;
+  --color-border: #dce5e7;
+  --color-input: #ced9dd;
+  --color-ring: #166c66;
+  --color-destructive: #b04a57;
+}
+.panel[data-slot="card"] {
+  display: block;
+  border-radius: 14px;
+  box-shadow: 0 3px 14px #20323805;
+}
+.intake[data-slot="card"] {
+  padding: 0;
+  overflow: hidden;
+}
+.panel-top {
+  padding: 24px 24px 14px;
+}
+.intake-caption {
+  align-items: center;
+  padding: 0 24px 22px;
+}
+.intake-caption button {
+  margin-left: auto;
+  border: 1px solid #ced9dd;
+  padding: 0 10px;
+  background: #fff;
+}
+.field-group {
+  padding: 24px;
+}
+.field-group legend {
+  font-size: 14px;
+}
+.field > span {
+  font-size: 13px;
+}
+.field-grid {
+  gap: 16px 12px;
+}
+.field [data-slot="native-select-wrapper"] {
+  width: 100%;
+}
+.field [data-slot="native-select-icon"] {
+  top: 50%;
+}
+.field [data-slot="input"],
+.field [data-slot="native-select"] {
+  height: 42px;
+  border-radius: 7px;
+  background: #fff;
+}
+.form-actions {
+  background: #f8fbfa;
+  padding: 22px 24px;
+}
+.primary-button {
+  height: 44px;
+  border-radius: 7px;
+}
+.results-heading {
+  margin-bottom: 16px;
+}
+.result-state {
+  font-size: 12px;
+  font-weight: 500;
+}
+.probability-panel,
+.contributors-panel {
+  padding: 26px;
+}
+.probability-panel {
+  border-top: 3px solid #166c66;
+}
+.text-button {
+  height: 32px;
+  padding: 0 8px;
+  margin: 12px 0 0 -8px;
+}
+.chart-data [data-slot="accordion-trigger"],
+.source-detail [data-slot="accordion-trigger"] {
+  padding: 12px 0;
+  font-size: 13px;
+  color: #166c66;
+}
+.chart-data [data-slot="accordion-item"],
+.source-detail [data-slot="accordion-item"] {
+  border: 0;
+}
+.chart-data ul {
+  line-height: 1.8;
+}
+.evidence-title {
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.evidence-title [data-slot="badge"] {
+  font-weight: 400;
+  color: #60757d;
+}
+.evidence-item {
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 14px;
+  padding: 24px 0;
+}
+.evidence-marker {
+  height: 28px;
+  width: 30px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+.evidence-item .formatted-evidence {
+  white-space: normal;
+  margin: 14px 0;
+  padding-left: 16px;
+  font-size: 14px;
+}
+.evidence-markdown {
+  min-width: 0;
+  line-height: 1.75;
+}
+.evidence-markdown p + p,
+.evidence-markdown ul,
+.evidence-markdown ol,
+.evidence-markdown h4 {
+  margin-top: 14px;
+}
+.evidence-markdown h4,
+.evidence-markdown h5,
+.evidence-markdown h6 {
+  font-weight: 600;
+  font-size: 15px;
+}
+.evidence-markdown ul {
+  list-style: disc;
+  padding-left: 22px;
+}
+.evidence-markdown ol {
+  list-style: decimal;
+  padding-left: 22px;
+}
+.evidence-markdown a {
+  display: inline;
+  text-decoration: underline;
+  font-size: inherit;
+}
+.evidence-markdown sup {
+  font-size: 10px;
+}
+.evidence-table {
+  overflow-x: auto;
+  margin: 14px 0;
+  border: 1px solid #dce5e7;
+  border-radius: 8px;
+}
+.evidence-table table {
+  min-width: 520px;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.evidence-table th {
+  background: #edf5f3;
+  font-weight: 600;
+  text-align: left;
+}
+.evidence-table td,
+.evidence-table th {
+  padding: 10px 12px;
+  border-bottom: 1px solid #dce5e7;
+  vertical-align: top;
+  min-width: 72px;
+}
+.evidence-table tr:last-child td {
+  border-bottom: 0;
+}
+.source-detail pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  background: #f3f6f7;
+  border-radius: 6px;
+  padding: 14px;
+  line-height: 1.6;
+}
+.synthesis-panel {
+  background: #f8fbfa;
+}
+@media (max-width: 740px) {
+  .probability-panel,
+  .contributors-panel {
+    padding: 22px;
+  }
+  .evidence-item {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .evidence-item .formatted-evidence {
+    padding-left: 10px;
+  }
+  .result-state {
+    font-size: 11px;
+  }
+}
+.evidence-item > div { min-width: 0; }
+.evidence-item .formatted-evidence { min-width: 0; }

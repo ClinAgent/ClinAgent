@@ -1,9 +1,21 @@
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { EvidenceMarkdown } from "@/components/evidence-markdown";
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import {
   Activity,
   ArrowRight,
-  ChevronDown,
   ClipboardList,
   ExternalLink,
   FileText,
@@ -147,7 +159,11 @@ export default function App() {
           </div>
         </div>
         <div className="workspace-grid">
-          <aside className="intake panel">
+          <Card
+            className="intake panel"
+            role="complementary"
+            aria-label="Patient details"
+          >
             <div className="panel-top">
               <div className="title-with-icon">
                 <ClipboardList size={19} />
@@ -158,7 +174,9 @@ export default function App() {
               <span>
                 {isExample ? "Example data" : "Enter measurements below"}
               </span>
-              <button
+              <Button
+                variant="outline"
+                size="sm"
                 type="button"
                 disabled={busy}
                 onClick={() => {
@@ -169,7 +187,7 @@ export default function App() {
                 }}
               >
                 Load example
-              </button>
+              </Button>
             </div>
             <form id="patient-form" onSubmit={analyze}>
               <fieldset disabled={busy} className="all-fields">
@@ -189,7 +207,7 @@ export default function App() {
                           <span>{field.label}</span>
                           {field.options ? (
                             <div className="select-wrap">
-                              <select
+                              <NativeSelect
                                 id={field.key}
                                 name={field.key}
                                 value={values[field.key]}
@@ -208,12 +226,11 @@ export default function App() {
                                     {label}
                                   </option>
                                 ))}
-                              </select>
-                              <ChevronDown size={14} />
+                              </NativeSelect>
                             </div>
                           ) : (
                             <div className="input-wrap">
-                              <input
+                              <Input
                                 id={field.key}
                                 name={field.key}
                                 type="number"
@@ -238,11 +255,12 @@ export default function App() {
               </fieldset>
               <div className="form-actions">
                 {error && (
-                  <p role="alert" className="error-message">
-                    {error}
-                  </p>
+                  <Alert variant="destructive" className="error-message">
+                    <Info />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
                 )}
-                <button
+                <Button
                   className="primary-button"
                   type="submit"
                   disabled={busy}
@@ -254,8 +272,9 @@ export default function App() {
                   )}{" "}
                   {busy ? "Analyzing case…" : "Analyze case"}
                   {!busy && <ArrowRight size={17} />}
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="ghost"
                   className="reset-button"
                   type="button"
                   disabled={busy}
@@ -267,14 +286,14 @@ export default function App() {
                   }}
                 >
                   <RotateCcw size={13} /> Clear measurements
-                </button>
+                </Button>
                 <p className="privacy-note">
                   Use example or consented data. Measurements may be sent to an
                   AI provider to generate a summary.
                 </p>
               </div>
             </form>
-          </aside>
+          </Card>
           <section
             className="results"
             ref={resultsRef}
@@ -286,7 +305,11 @@ export default function App() {
                 <span className="small-rule" />
                 <h2>Assessment results</h2>
               </div>
-              <span className="result-state" aria-live="polite">
+              <Badge
+                variant="secondary"
+                className="result-state"
+                aria-live="polite"
+              >
                 {busy
                   ? "Analyzing…"
                   : result
@@ -294,10 +317,10 @@ export default function App() {
                       ? "Complete"
                       : "Summary unavailable"
                     : "Not yet analyzed"}
-              </span>
+              </Badge>
             </div>
             <div className="overview-grid">
-              <article className="panel probability-panel">
+              <Card className="panel probability-panel">
                 <h3>Disease probability</h3>
                 <div
                   className="gauge-wrap"
@@ -360,8 +383,8 @@ export default function App() {
                     Not a ten-year cardiovascular risk score.
                   </small>
                 </div>
-              </article>
-              <article className="panel contributors-panel">
+              </Card>
+              <Card className="panel contributors-panel">
                 <h3>Key factors</h3>
                 <p className="card-description">
                   How each measurement influences the estimate.
@@ -426,24 +449,31 @@ export default function App() {
                         Raises estimate
                       </span>
                     </div>
-                    <button
+                    <Button
+                      variant="ghost"
                       className="text-button"
                       onClick={() => setShowAll(!showAll)}
                     >
                       {showAll ? "Show top six" : "View all factors"}
-                    </button>
-                    <details className="chart-data">
-                      <summary>View detailed values</summary>
-                      <ul>
-                        {result.prediction.contributions.map((c) => (
-                          <li key={c.feature}>
-                            {labels[c.feature]}:{" "}
-                            {(c.shap_value * 100).toFixed(2)} pp
-                            {c.imputed ? " · imputed" : ""}
-                          </li>
-                        ))}
-                      </ul>
-                    </details>
+                    </Button>
+                    <Accordion type="single" collapsible className="chart-data">
+                      <AccordionItem value="values">
+                        <AccordionTrigger>
+                          View detailed values
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <ul>
+                            {result.prediction.contributions.map((c) => (
+                              <li key={c.feature}>
+                                {labels[c.feature]}:{" "}
+                                {(c.shap_value * 100).toFixed(2)} pp
+                                {c.imputed ? " · imputed" : ""}
+                              </li>
+                            ))}
+                          </ul>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
                   </>
                 ) : (
                   <div className="chart-empty">
@@ -462,12 +492,12 @@ export default function App() {
                 <p className="chart-footnote">
                   Model explanations describe associations, not causes.
                 </p>
-              </article>
+              </Card>
             </div>
-            <article className="panel evidence-panel">
+            <Card className="panel evidence-panel">
               <div className="evidence-title">
                 <h3>Clinical evidence</h3>
-                <span className="tag">2019 ACC/AHA guideline</span>
+                <Badge variant="outline">2019 ACC/AHA guideline</Badge>
               </div>
               <p className="card-description">
                 Relevant passages from the primary prevention guideline.
@@ -484,7 +514,23 @@ export default function App() {
                             ? `page ${e.metadata.page_label || e.metadata.page}`
                             : `character ${e.metadata.start_index}`}
                         </p>
-                        <blockquote>{e.text}</blockquote>
+                        <blockquote className="formatted-evidence">
+                          <EvidenceMarkdown text={e.text} />
+                        </blockquote>
+                        <Accordion
+                          type="single"
+                          collapsible
+                          className="source-detail"
+                        >
+                          <AccordionItem value="source">
+                            <AccordionTrigger>
+                              View exact source text
+                            </AccordionTrigger>
+                            <AccordionContent>
+                              <pre>{e.text}</pre>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
                         <a
                           href={e.metadata.source_url}
                           target="_blank"
@@ -512,8 +558,8 @@ export default function App() {
                   establish treatment eligibility.
                 </span>
               </div>
-            </article>
-            <article className="panel synthesis-panel">
+            </Card>
+            <Card className="panel synthesis-panel">
               <h3>Summary</h3>
               {result?.synthesis.status === "complete" ? (
                 <>
@@ -533,7 +579,7 @@ export default function App() {
                   </p>
                 </div>
               )}
-            </article>
+            </Card>
             <footer className="review-footer">
               <span>
                 <FlaskConical size={13} /> Research prototype · not a diagnosis

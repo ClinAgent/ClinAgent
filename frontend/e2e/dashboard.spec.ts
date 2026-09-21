@@ -106,3 +106,35 @@ test("renders a complete synthesis response from a test-only provider fixture", 
   await expect(page.getByText(summary, { exact: true })).toBeVisible();
   await expect(page.getByText("Complete", { exact: true })).toBeVisible();
 });
+
+test("evidence renders Markdown and sanitizes source HTML", async ({
+  page,
+}) => {
+  const source =
+    '### Guideline excerpt\n\n| Class | Recommendation |\n| --- | --- |\n| I | **Review** the evidence. |\n\n- First point\n- Second point\n\nReference<sup>1</sup>\n<script>window.evidenceInjected = true</script>\n<a href="javascript:alert(1)">Unsafe link</a>';
+  await page.route("**/analyze", async (route) => {
+    const response = await route.fetch();
+    const result = await response.json();
+    result.evidence[0].text = source;
+    await route.fulfill({ json: result });
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Load example" }).click();
+  await page.getByRole("button", { name: "Analyze case", exact: true }).click();
+  const evidence = page.locator(".formatted-evidence").first();
+  await expect(
+    evidence.getByRole("heading", { name: "Guideline excerpt" }),
+  ).toBeVisible();
+  await expect(evidence.getByRole("table")).toBeVisible();
+  await expect(evidence.locator("strong")).toHaveText("Review");
+  await expect(evidence.locator("li")).toHaveCount(2);
+  await expect(evidence.locator("sup")).toHaveText("1");
+  await expect(evidence.locator("script")).toHaveCount(0);
+  await expect(evidence.locator('a[href^="javascript:"]')).toHaveCount(0);
+  expect(await page.evaluate(() => "evidenceInjected" in window)).toBeFalsy();
+  await page
+    .getByRole("button", { name: "View exact source text" })
+    .first()
+    .click();
+  await expect(page.locator(".source-detail pre").first()).toHaveText(source);
+});
