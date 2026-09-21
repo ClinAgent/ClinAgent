@@ -35,3 +35,32 @@ def test_rejects_invalid_original_codes(feature, value):
 def test_rejects_wrong_feature_order():
     with pytest.raises(ValueError):
         validate(pd.DataFrame([PATIENT], columns=FEATURES).iloc[:, ::-1])
+
+
+def test_loads_original_labels_and_missing_markers(tmp_path):
+    from aegishealth.data import load_dataset
+
+    rows = [PATIENT + [i % 5] for i in range(303)]
+    frame = pd.DataFrame(rows, columns=FEATURES + ["num"])
+    frame["chol"] = np.arange(150, 453)
+    frame["ca"] = frame.ca.astype(object)
+    frame.loc[0, "ca"] = "?"
+    path = tmp_path / "cleveland.data"
+    frame.to_csv(path, header=False, index=False)
+    loaded = load_dataset(path)
+    assert loaded.shape == (303, 14)
+    assert pd.isna(loaded.loc[0, "ca"])
+    assert set(loaded.num) == {0, 1, 2, 3, 4}
+    frame.loc[0, "num"] = 5
+    frame.to_csv(path, header=False, index=False)
+    with pytest.raises(ValueError, match="target"):
+        load_dataset(path)
+
+
+def test_rejects_wrong_dataset_shape(tmp_path):
+    from aegishealth.data import load_dataset
+
+    path = tmp_path / "wrong.data"
+    pd.DataFrame([PATIENT + [0]]).to_csv(path, header=False, index=False)
+    with pytest.raises(ValueError, match="303 x 14"):
+        load_dataset(path)

@@ -58,3 +58,17 @@ The endpoint is existing angiographic disease presence (`num > 0`), not incident
 The probability is not yet externally validated or established as calibrated for clinical use. Performance differences between leading candidates are small relative to fold variability. Calibration, subgroup performance, transportability, threshold selection and prospective validation remain open. SHAP explains associations learned by the model, not biological causes or treatment effects.
 
 Raw audit and per-fold scores are stored alongside this report. Dataset SHA-256: `a74b7efa387bc9d108d7d0115d831fe9b414b29ae7124f331b622b4efa0427c8`.
+
+## Explainability verification
+
+All 31 tests pass, including SHAP probability additivity for logistic regression,
+random forests and XGBoost; missing-input explanations; invalid codes; and dataset
+schema validation. Ruff and whitespace checks pass. An integration check against
+the trained artifacts confirms disjoint splits, training-only imputation medians,
+and development-only SHAP background rows.
+
+For the synthetic example, loading the model plus the first explanation took
+3.47 seconds (excluding Python imports). Median warm explanation time across
+five subsequent calls was 42.7 ms. Startup/JIT overhead therefore matters; the
+future FastAPI process should load and warm the explainer before accepting
+requests. These local measurements do not test the complete three-second target.

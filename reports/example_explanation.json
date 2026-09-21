@@ -1,0 +1,150 @@
+{
+  "model": "logistic_c0.1",
+  "target": "Cleveland disease presence (num > 0)",
+  "disease_probability": 0.8389004991787496,
+  "predicted_class": 1,
+  "classification_threshold": 0.5,
+  "base_probability": 0.4147821676399931,
+  "shap_units": "probability",
+  "explanation_method": "permutation SHAP (10 permutations)",
+  "top_3_contributors": [
+    {
+      "feature": "thal",
+      "value": 7.0,
+      "imputed": false,
+      "shap_value": 0.1315125194892191,
+      "direction": "increases"
+    },
+    {
+      "feature": "cp",
+      "value": 4.0,
+      "imputed": false,
+      "shap_value": 0.08055321993320515,
+      "direction": "increases"
+    },
+    {
+      "feature": "exang",
+      "value": 1.0,
+      "imputed": false,
+      "shap_value": 0.06269483928556366,
+      "direction": "increases"
+    }
+  ],
+  "top_risk_factors": [
+    {
+      "feature": "thal",
+      "value": 7.0,
+      "imputed": false,
+      "shap_value": 0.1315125194892191,
+      "direction": "increases"
+    },
+    {
+      "feature": "cp",
+      "value": 4.0,
+      "imputed": false,
+      "shap_value": 0.08055321993320515,
+      "direction": "increases"
+    },
+    {
+      "feature": "exang",
+      "value": 1.0,
+      "imputed": false,
+      "shap_value": 0.06269483928556366,
+      "direction": "increases"
+    }
+  ],
+  "contributions": [
+    {
+      "feature": "age",
+      "value": 63.0,
+      "imputed": false,
+      "shap_value": -0.0014423391926322638,
+      "direction": "decreases"
+    },
+    {
+      "feature": "sex",
+      "value": 1.0,
+      "imputed": false,
+      "shap_value": 0.04390630380496678,
+      "direction": "increases"
+    },
+    {
+      "feature": "cp",
+      "value": 4.0,
+      "imputed": false,
+      "shap_value": 0.08055321993320515,
+      "direction": "increases"
+    },
+    {
+      "feature": "trestbps",
+      "value": 145.0,
+      "imputed": false,
+      "shap_value": 0.027741322118622867,
+      "direction": "increases"
+    },
+    {
+      "feature": "chol",
+      "value": 233.0,
+      "imputed": false,
+      "shap_value": -0.007010929142517855,
+      "direction": "decreases"
+    },
+    {
+      "feature": "fbs",
+      "value": 1.0,
+      "imputed": false,
+      "shap_value": -0.012209412771745632,
+      "direction": "decreases"
+    },
+    {
+      "feature": "restecg",
+      "value": 2.0,
+      "imputed": false,
+      "shap_value": 0.015273867316867385,
+      "direction": "increases"
+    },
+    {
+      "feature": "thalach",
+      "value": 150.0,
+      "imputed": false,
+      "shap_value": 0.01898523299607231,
+      "direction": "increases"
+    },
+    {
+      "feature": "exang",
+      "value": 1.0,
+      "imputed": false,
+      "shap_value": 0.06269483928556366,
+      "direction": "increases"
+    },
+    {
+      "feature": "oldpeak",
+      "value": 2.3,
+      "imputed": false,
+      "shap_value": 0.05822923591215849,
+      "direction": "increases"
+    },
+    {
+      "feature": "slope",
+      "value": 2.0,
+      "imputed": false,
+      "shap_value": 0.05245835718583558,
+      "direction": "increases"
+    },
+    {
+      "feature": "ca",
+      "value": 0.0,
+      "imputed": false,
+      "shap_value": -0.04657388539685955,
+      "direction": "decreases"
+    },
+    {
+      "feature": "thal",
+      "value": 7.0,
+      "imputed": false,
+      "shap_value": 0.1315125194892191,
+      "direction": "increases"
+    }
+  ],
+  "limitations": "Research model; not a calibrated future-risk score or diagnosis. SHAP describes model behavior, not causation. Missing inputs are imputed."
+}
