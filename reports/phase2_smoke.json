@@ -1,0 +1,89 @@
+{
+  "source_url": "https://www.ahajournals.org/doi/10.1161/CIR.0000000000000677",
+  "source_sha256": "4e5d13566e0eb2522789819554308f3396edab1be25e2090503542f019c364f5",
+  "chunk_count": 202,
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "embedding_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+  "offline_reopen_verified": true,
+  "idempotent_ingestion_verified": true,
+  "source_offsets_verified": true,
+  "model_load_seconds_excluding_imports": 0.19583623300422914,
+  "warm_query_median_ms": 5.531683997105574,
+  "peak_process_rss_mib": 624.5546875,
+  "queries": [
+    {
+      "query": "high cholesterol and age over 50",
+      "seconds": 0.009571161994244903,
+      "matches": [
+        {
+          "chunk_id": "08662d15770c63952c4df4b8f0adf9d51021f9e7ec2610b7b7d6d1944ff2ec9e",
+          "start_index": 43667,
+          "cosine_distance": 0.37939757108688354,
+          "characters": 394
+        },
+        {
+          "chunk_id": "a23d7ab029e9b08e438656bacc4322e7ac966c5dd95f6395ce9864c2cf4e7b2e",
+          "start_index": 44653,
+          "cosine_distance": 0.43234533071517944,
+          "characters": 403
+        }
+      ]
+    },
+    {
+      "query": "smoking cessation tobacco use",
+      "seconds": 0.009129947000474203,
+      "matches": [
+        {
+          "chunk_id": "9d3dc5fd587ab9b36c55b4ec94f7ed1ae16047f685c4b48d79acccf7902bcf4c",
+          "start_index": 63434,
+          "cosine_distance": 0.3207648992538452,
+          "characters": 411
+        },
+        {
+          "chunk_id": "dc9f1fdb0254fcb21ea2ad30d9f66afaef8c88cf58048f179bda2bd47dc4b930",
+          "start_index": 56925,
+          "cosine_distance": 0.33013415336608887,
+          "characters": 444
+        }
+      ]
+    },
+    {
+      "query": "physical activity exercise 150 minutes per week",
+      "seconds": 0.006455677998019382,
+      "matches": [
+        {
+          "chunk_id": "695bb99704d50699cee4ee2b1459591f440941706f44c3698adbf53ac22b8689",
+          "start_index": 7359,
+          "cosine_distance": 0.21671515703201294,
+          "characters": 176
+        },
+        {
+          "chunk_id": "3f39c4638c6b1844d06518338386686d731784d583037a1af8361da128c23285",
+          "start_index": 33894,
+          "cosine_distance": 0.4033903479576111,
+          "characters": 277
+        }
+      ]
+    },
+    {
+      "query": "aspirin primary prevention adults over 70",
+      "seconds": 0.0066392640001140535,
+      "matches": [
+        {
+          "chunk_id": "f13a3a65c8509235dd2e73e3b351e03757c39cd35f69c485869279dcabbf9bb8",
+          "start_index": 60809,
+          "cosine_distance": 0.3061257004737854,
+          "characters": 431
+        },
+        {
+          "chunk_id": "8841b049952b7c2d3aa0a3335f8460fe88b734b155f4da8592c828fe642f2965",
+          "start_index": 8021,
+          "cosine_distance": 0.3266040086746216,
+          "characters": 437
+        }
+      ]
+    }
+  ],
+  "precision_at_k_evaluated": false,
+  "known_miss": "Aspirin query for adults over 70 did not retrieve the explicit over-70 warning within top two. No formal relevance labels or Precision@k yet."
+}

@@ -1,9 +1,9 @@
 # AegisHealth / ClinAgent
 
-CPU-first, explainable clinical decision support research prototype. Phase 1 is
-implemented: Cleveland dataset validation, model comparison, persistence, and SHAP
-JSON explanations. RAG, FastAPI, the React dashboard, and end-to-end evaluation
-remain gated by the requested phase-by-phase confirmation.
+CPU-first, explainable clinical decision support research prototype. Phases 1 and 2
+are implemented: Cleveland model comparison, SHAP explanations, and local guideline
+retrieval. FastAPI, the React dashboard, and end-to-end evaluation remain gated by
+the requested phase-by-phase confirmation.
 
 ## Run Phase 1
 
@@ -89,16 +89,64 @@ of otherwise valid patient attributes can affect interpretation. Reuse
 `PatientExplainer` in a long-lived process to avoid repeated model loading and
 SHAP/Numba startup costs; the future API should warm it at startup.
 
+## Run Phase 2
+
+Install the optional retrieval dependencies and index the downloaded Executive Summary:
+
+```bash
+uv sync --locked --extra rag
+uv run --extra rag python -m aegishealth.rag ingest --source data/knowledge_base/acc_aha_2019_executive_summary.txt
+uv run --extra rag python -m aegishealth.rag query "high cholesterol and age over 50" --offline
+uv run --extra rag pytest -q
+```
+
+For a different PDF or TXT, pass its path with `--source`. Both commands accept
+`--index /absolute/path/to/chroma`; the default is `artifacts/chroma/`. The first
+embedding load downloads the pinned `sentence-transformers/all-MiniLM-L6-v2`
+revision into `artifacts/embedding_cache/`. Subsequent operations can use
+`--offline`. No API key or local generative LLM is needed. On Linux/Windows,
+the lockfile selects CPU-only PyTorch. Encoder and Chroma HNSW work use two threads;
+embedding batches contain 16 chunks.
+
+LangChain splits the text into at most 500 characters with a target overlap of
+50 characters, preserving paragraph/word boundaries where possible. Actual overlap
+can be smaller at separators and page boundaries. Standalone headings and the
+bibliography are excluded from retrieval; the saved source stays complete.
+PDF inputs preserve one-based PDF page numbers and page labels. TXT inputs use
+character offsets without inventing pagination.
+
+The query returns exactly two stored snippets with source DOI, source checksum,
+chunk ID, character offset, and cosine distance (lower is closer). Distances are
+not confidence scores. The loader checks basic document identity and text content;
+it does not certify completeness or extraction accuracy. Review the cited source
+when tables, conditions, or dosage details matter.
+
+Re-ingesting the same file and configuration does not duplicate chunks. A changed
+source creates a new collection; only a completed build becomes active. Older
+collections remain available to existing readers and occupy disk space. To
+reclaim them, rebuild in a fresh `--index` directory and remove the old directory
+only after stopping its readers. Do not delete `ingest.lock` while a writer is
+running. After an interrupted writer, confirm it has stopped before removing a
+stale lock and retrying.
+
+The [Phase 2 verification report](reports/phase2.md) records persistence, exact
+source matching, timing, and known retrieval misses. A smoke query about aspirin
+for adults over 70 did not retrieve the specific age warning within the top two;
+this baseline must not be treated as a complete medication safety check. Formal
+labeled Precision@k evaluation remains in Phase 5. The future synthesis layer
+must preserve the conditions in retrieved text and must not infer patient facts
+such as diabetes or LDL cholesterol from absent inputs.
+
 ## Next phases
 
-1. Phase 1: complete ML comparison and explainability; awaiting confirmation.
-2. Phase 2: LangChain, CPU MiniLM embeddings, persistent Chroma, top-two retrieval.
+1. Phase 1: complete ML comparison and explainability.
+2. Phase 2: complete LangChain/CPU MiniLM/Chroma retrieval; awaiting confirmation for Phase 3.
 3. Phase 3: FastAPI orchestration with a cloud LLM only.
 4. Phase 4: React/Vite/Tailwind/Recharts dashboard using the requested frontend-design skill.
 5. Phase 5: untouched-holdout metrics, labeled retrieval evaluation and measured end-to-end latency.
 
-For Phase 2, download the [2019 ACC/AHA Executive Summary](https://www.ahajournals.org/doi/10.1161/CIR.0000000000000677)
-and save it as `.txt` or `.pdf` in `data/knowledge_base/`. The supplied
+The [2019 ACC/AHA Executive Summary](https://www.ahajournals.org/doi/10.1161/CIR.0000000000000677)
+has been downloaded as a PDF-derived TXT in `data/knowledge_base/`. The supplied
 [DOI ending in 0678](https://www.ahajournals.org/doi/10.1161/CIR.0000000000000678)
 is the full guideline; `0677` is its companion Executive Summary.
 See [document preparation](data/knowledge_base/README.md).
