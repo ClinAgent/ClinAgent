@@ -1,0 +1,31 @@
+flowchart TD
+    UI[React / Vite dashboard: 13 named measurements] --> API[POST /analyze: FastAPI routing]
+    API --> VALID[Data processing responsibility: typed validation and original UCI codes]
+    VALID -->|Invalid input| ERR[HTTP 422: sanitized validation details]
+    VALID -->|Valid input| SLOT{Acquire local semaphore within 0.1 seconds?}
+    SLOT -->|No| BUSY[HTTP 429: retry later]
+    SLOT -->|Yes| EXPLAIN[Explainability responsibility: permutation SHAP on raw feature groups]
+    MODEL[(Saved training-fitted preprocessing and logistic model C=0.1)] -.-> PRED
+    BACKGROUND[(32 raw development background rows)] -.-> EXPLAIN
+    EXPLAIN -->|Repeated model evaluations| PRED[Prediction responsibility: positive-class probability]
+    PRED -->|Probability evaluations| EXPLAIN
+    EXPLAIN --> CHECK[Check probability additivity; rank all 13 feature contributions]
+    CHECK --> QUERY[Top 3 absolute SHAP contributors: decode names and observed values]
+    QUERY --> RET[Medical knowledge responsibility: MiniLM semantic search]
+    SOURCE[2019 ACC/AHA Executive Summary: official PDF extraction] -.-> CHUNKS[Clinical section filtering: 500-character chunks, target overlap 50]
+    CHUNKS -.-> DB[(Versioned Chroma cosine index: 140 chunks)]
+    DB -.-> RET
+    RET --> EVID[Two exact excerpts: E1 / E2, source URL, checksum and character offsets]
+    EVID --> RELEASE[Release local semaphore]
+    RELEASE --> KEY{Cloud provider configured?}
+    KEY -->|Yes| CLOUD[Recommendation responsibility: one asynchronous cloud synthesis call]
+    CHECK -->|Probability and top signed contributions| CLOUD
+    EVID -->|Untrusted evidence content| CLOUD
+    CLOUD --> VERIFY{Complete response, three sentences, valid evidence identifiers?}
+    VERIFY -->|Yes| COMPLETE[Complete result: validated summary shape]
+    VERIFY -->|Timeout, rejection or invalid output| PARTIAL[Partial result: explicit unavailable reason]
+    KEY -->|No| PARTIAL
+    COMPLETE --> JSON[JSON: prediction, all SHAP values, evidence, synthesis status and timings]
+    PARTIAL --> JSON
+    JSON --> RENDER[Dashboard: probability, signed chart, sanitized Markdown evidence, optional summary]
+    RENDER -->|Editing any measurement invalidates old results| UI

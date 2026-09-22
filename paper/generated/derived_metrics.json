@@ -1,0 +1,45 @@
+{
+  "source": "reports/evaluation.json",
+  "new_retrieval_experiment": false,
+  "mean_seed_recall_at_2": 0.5277777777777778,
+  "queries": [
+    {
+      "id": "activity",
+      "hits": 2,
+      "labeled_relevant": 3,
+      "recall_at_2": 0.6666666666666666
+    },
+    {
+      "id": "aspirin_age",
+      "hits": 0,
+      "labeled_relevant": 1,
+      "recall_at_2": 0.0
+    },
+    {
+      "id": "aspirin_bleeding",
+      "hits": 2,
+      "labeled_relevant": 2,
+      "recall_at_2": 1.0
+    },
+    {
+      "id": "diet",
+      "hits": 0,
+      "labeled_relevant": 4,
+      "recall_at_2": 0.0
+    },
+    {
+      "id": "obesity",
+      "hits": 2,
+      "labeled_relevant": 4,
+      "recall_at_2": 0.5
+    },
+    {
+      "id": "ldl",
+      "hits": 1,
+      "labeled_relevant": 1,
+      "recall_at_2": 1.0
+    }
+  ],
+  "partial_http_median_ms": 62.56071499956306,
+  "complete_requests": 0
+}

@@ -1,0 +1,25 @@
+\begin{tikzpicture}[
+ node distance=7mm and 7mm,
+ box/.style={draw,rounded corners=1pt,align=center,font=\footnotesize,text width=27mm,minimum height=12mm,inner sep=3pt},
+ artifact/.style={box,fill=black!4},
+ flow/.style={-{Latex[length=2mm]},thick},
+ support/.style={flow,dashed}]
+\node[box] (ui) {React dashboard\\13 measurements};
+\node[box,right=of ui] (api) {FastAPI routing\\Data validation};
+\node[box,right=of api] (predict) {Prediction + SHAP\\Saved logistic pipeline};
+\node[box,right=of predict] (rag) {Medical knowledge\\Top-3 feature query\\Top-2 retrieval};
+\node[box,right=of rag] (llm) {Recommendation\\Optional cloud LLM\\Output validation};
+\node[artifact,below=of api] (pre) {Training-fitted\\preprocessing};
+\node[artifact,below=of predict] (model) {Model artifact\\32 background rows};
+\node[artifact,below=of rag] (store) {Versioned Chroma\\MiniLM embeddings\\2019 guideline};
+\node[box,below=of llm] (json) {JSON response\\Complete or partial\\Evidence retained};
+\draw[flow] (ui)--(api);
+\draw[flow] (api)--(predict);
+\draw[flow] (predict)--(rag);
+\draw[flow] (rag)--(llm);
+\draw[support] (pre)--(api);
+\draw[support] (model)--(predict);
+\draw[support] (store)--(rag);
+\draw[flow] (llm)--(json);
+\draw[flow] (json.south)--++(0,-7mm)-|(ui.south);
+\end{tikzpicture}
