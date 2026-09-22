@@ -63,7 +63,7 @@ The five functional agents map to concrete implementation responsibilities:
 The \texttt{LocalAgents} service and the API route coordinate these roles. ``Agentic'' therefore denotes role-specific tool orchestration in this prototype, not autonomous planning, decentralized consensus, or adaptive task allocation.
 
 \subsection{Dataset and Preprocessing}
-The study uses only \texttt{processed.cleveland.data} from the UCI Heart Disease resource~\cite{uci}. Its 303 rows contain thirteen predictors and the original disease label \texttt{num}. The binary outcome is $y=\mathbb{1}[\texttt{num}>0]$, yielding 164 negative and 139 positive records. Four vessel-count entries and two thallium entries are missing; no records are discarded. Structural checks identify no exact duplicates.
+The study uses only \texttt{processed.cleveland.data} from the UCI Heart Disease resource~\cite{uci}. Its 303 rows contain thirteen predictors and the original disease label \texttt{num}. The binary outcome is $y=\mathbf{1}[\texttt{num}>0]$, yielding 164 negative and 139 positive records. Four vessel-count entries and two thallium entries are missing; no records are discarded. Structural checks identify no exact duplicates.
 
 Numeric predictors are age, resting blood pressure, total cholesterol, maximum exercise heart rate, exercise-induced ST depression, and fluoroscopy vessel count. The seven categorical predictors are sex, chest-pain type, fasting-glucose indicator, resting ECG category, exercise-induced angina, ST slope, and thallium category. Numeric values receive median imputation and standardization. Categorical values receive mode imputation and one-hot encoding using predefined original UCI levels. Vessel count is treated as a count, while ST slope is categorical. The schema does not silently accept differently recoded dataset variants.
 
@@ -107,9 +107,9 @@ The returned baseline and contributions must satisfy
 The dashboard converts $\phi_j$ to percentage points using $100\phi_j$. Additivity is an implementation invariant, not evidence that attribution sampling is exact or that the underlying model is clinically valid. Independent masking can construct implausible combinations of correlated clinical features. Missing values are explicitly marked as imputed; a missing feature selected among the strongest contributors is omitted from the retrieval query rather than described as observed.
 
 \subsection{Guideline Retrieval and Provenance}
-The corpus is the \emph{Executive Summary} of the 2019 ACC/AHA primary-prevention guideline, DOI 10.1161/CIR.0000000000000677~\cite{arnett2019}. It is distinct from the full-guideline DOI supplied during project planning. Firecrawl extracted the official PDF into UTF-8 text; retained passages are indexed without paraphrasing. The final index contains 140 chunks after excluding publication, methodology, bibliography, and other nonclinical material according to the implemented section filters. Recursive splitting targets 500 characters with 50-character overlap; actual overlap can vary at boundaries.
+The corpus is the \emph{Executive Summary} of the 2019 ACC/AHA primary-prevention guideline~\cite{arnett2019}. Firecrawl extracted the official PDF into UTF-8 text; retained passages are indexed without paraphrasing. The final index contains 140 chunks after excluding publication, methodology, bibliography, and other nonclinical material according to the implemented section filters. Recursive splitting targets 500 characters with 50-character overlap; actual overlap can vary at boundaries.
 
-The CPU encoder is \texttt{all-MiniLM-L6-v2}, pinned to a repository revision and configured to normalize embeddings. Chroma stores the embeddings in a persistent cosine-distance collection. For query embedding $u$ and passage embedding $v_i$,
+The CPU encoder is \texttt{all-MiniLM-L6-v2}, pinned to a repository revision and configured to normalize embeddings. Chroma stores the embeddings in a persistent cosine-distance collection searched with its HNSW approximate-nearest-neighbor index. For query embedding $u$ and passage embedding $v_i$,
 \begin{equation}
  s(u,v_i)=\frac{u^\top v_i}{\lVert u\rVert_2\lVert v_i\rVert_2},
  \qquad D_2(q)=\operatorname{Top2}_{d_i}\ s(u,v_i).
@@ -176,9 +176,11 @@ The age-specific aspirin query and dietary-pattern query retrieve no labeled rel
 \subsection{Latency and Operational Behavior}
 The critical path can be expressed as
 \begin{equation}
- T_{\mathrm{total}}=T_{\mathrm{validation}}+T_{\mathrm{queue}}
- +T_{\mathrm{prediction+SHAP}}+T_{\mathrm{retrieval}}
- +T_{\mathrm{cloud}}+T_{\mathrm{serialization}}.
+\begin{split}
+ T_{\mathrm{total}}={}&T_{\mathrm{validation}}+T_{\mathrm{queue}}
+ +T_{\mathrm{prediction+SHAP}}\\
+ &+T_{\mathrm{retrieval}}+T_{\mathrm{cloud}}+T_{\mathrm{serialization}}.
+\end{split}
 \end{equation}
 The saved classifier-only warm prediction median is 2.46 ms over thirty calls. This excludes SHAP, retrieval, HTTP, and cloud generation. Ten recorded local HTTP requests complete with real model output and retrieved passages, but all report \texttt{provider\_not\_configured}. Their partial-response median is 62.56 ms. Complete synthesis succeeds in zero of ten requests; complete-response median and 95th-percentile latency are therefore unmeasured. The under-three-second full-pipeline target is not demonstrated.
 

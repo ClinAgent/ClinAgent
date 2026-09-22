@@ -9,8 +9,8 @@
 \node[box,right=of api] (predict) {Prediction + SHAP\\Saved logistic pipeline};
 \node[box,right=of predict] (rag) {Medical knowledge\\Top-3 feature query\\Top-2 retrieval};
 \node[box,right=of rag] (llm) {Recommendation\\Optional cloud LLM\\Output validation};
-\node[artifact,below=of api] (pre) {Training-fitted\\preprocessing};
-\node[artifact,below=of predict] (model) {Model artifact\\32 background rows};
+\node[artifact,below=of api] (pre) {Input schema\\Original UCI codes};
+\node[artifact,below=of predict] (model) {Saved preprocessing\\Logistic model\\32 background rows};
 \node[artifact,below=of rag] (store) {Versioned Chroma\\MiniLM embeddings\\2019 guideline};
 \node[box,below=of llm] (json) {JSON response\\Complete or partial\\Evidence retained};
 \draw[flow] (ui)--(api);

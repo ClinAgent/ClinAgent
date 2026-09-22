@@ -1,4 +1,5 @@
 """Regenerate manuscript tables from committed evaluation reports (no retraining)."""
+import hashlib
 import json
 from pathlib import Path
 from statistics import mean, median
@@ -52,3 +53,10 @@ assert abs(mean(precisions)-evaluation['rag']['mean_precision_at_2']) < 1e-12
  'mean_seed_recall_at_2':mean(recalls), 'queries':details,
  'partial_http_median_ms':1000*median(s['seconds'] for s in evaluation['end_to_end']['samples']),
  'complete_requests':evaluation['end_to_end']['complete_requests']},indent=2)+'\n')
+
+source_paths = ['reports/data_audit.json', 'reports/model_comparison.json',
+                'reports/evaluation.json', 'reports/example_explanation.json',
+                'evaluation/retrieval_labels.json']
+(OUT / 'source_checksums.json').write_text(json.dumps({
+    p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest() for p in source_paths
+}, indent=2) + '\n')

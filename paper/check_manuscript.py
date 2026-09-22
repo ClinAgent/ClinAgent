@@ -1,4 +1,5 @@
 """Small deterministic editorial checks; not a replacement for scientific review."""
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -24,3 +25,7 @@ assert f"{e['ml']['roc_auc']:.4f}" in abstract
 assert e['end_to_end']['complete_requests'] == 0
 assert json.loads((HERE / 'generated/derived_metrics.json').read_text())['new_retrieval_experiment'] is False
 print('PASS: 200-word abstract, five terms, requested headings, published citation keys, numerical claims.')
+
+for name, expected in json.loads((HERE / 'generated/source_checksums.json').read_text()).items():
+    assert hashlib.sha256((HERE.parent / name).read_bytes()).hexdigest() == expected, name
+print('PASS: report checksums match the manuscript evidence snapshot.')

@@ -258,3 +258,11 @@ end-to-end performance is made at this stage.
 Dataset: Janosi, A., Steinbrunn, W., Pfisterer, M., & Detrano, R. (1989).
 [Heart Disease, UCI Machine Learning Repository](https://doi.org/10.24432/C52P4X),
 CC BY 4.0. The original `num` values 1–4 are mapped to disease present, and 0 to absent.
+
+## Research manuscript
+
+The implementation-grounded [IEEE LaTeX manuscript](paper/main.tex),
+[compiled PDF](paper/main.pdf), [published references](paper/references.bib),
+and [Mermaid architecture source](paper/figures/orchestration.mmd) are in
+[`paper/`](paper/README.md). The paper distinguishes measured classifier and
+retrieval results from unmeasured clinical and cloud-generation outcomes.
