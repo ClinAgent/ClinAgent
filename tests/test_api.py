@@ -53,8 +53,8 @@ class Agents:
 
 
 def test_validation_and_partial_response(monkeypatch):
-    monkeypatch.delenv("GROQ_API_KEY", raising=False)
-    monkeypatch.setenv("LLM_PROVIDER", "groq")
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.setenv("LLM_PROVIDER", "openrouter")
     synth = CloudSynthesizer()
     with TestClient(create_app(Agents(), synth)) as client:
         assert client.get("/health").json()["cloud_configured"] is False
@@ -78,12 +78,30 @@ def test_validation_and_partial_response(monkeypatch):
     "mode",
     ["valid", "timeout", "bad_json", "truncated", "bad_citation", "extra_sentence", "unauthorized"],
 )
-def test_cloud_contract(monkeypatch, mode):
-    monkeypatch.setenv("GROQ_API_KEY", "test-key")
-    monkeypatch.setenv("LLM_PROVIDER", "groq")
+@pytest.mark.parametrize("provider", ["openrouter", "openai"])
+def test_cloud_contract(monkeypatch, mode, provider):
+    monkeypatch.setenv(f"{provider.upper()}_API_KEY", "test-key")
+    monkeypatch.setenv("LLM_PROVIDER", provider)
+    monkeypatch.delenv("LLM_MODEL", raising=False)
 
     def handler(request):
+        assert str(request.url) == (
+            "https://openrouter.ai/api/v1/chat/completions" if provider == "openrouter"
+            else "https://api.openai.com/v1/chat/completions"
+        )
+        assert request.headers["Authorization"] == "Bearer test-key"
         payload = json.loads(request.content)
+        assert payload["response_format"] == {"type": "json_object"}
+        assert "reasoning_effort" not in payload
+        if provider == "openrouter":
+            assert payload["model"] == "openai/gpt-4.1-mini"
+            assert payload["max_tokens"] == 1024
+            assert payload["provider"] == {"require_parameters": True}
+            assert "max_completion_tokens" not in payload
+        else:
+            assert payload["model"] == "gpt-4.1-mini"
+            assert payload["max_completion_tokens"] == 1024
+            assert "provider" not in payload
         assert payload["messages"][0]["role"] == "system"
         assert "untrusted data" in payload["messages"][0]["content"]
         assert len(payload["messages"]) == 2
@@ -135,3 +153,28 @@ def test_query_preserves_observed_feature_meaning():
     assert "thallium" not in q
     assert "LDL" not in q
     assert PatientInput(**PATIENT).feature_array()[4] == 233
+
+
+def test_openrouter_default_and_model_override(monkeypatch):
+    monkeypatch.delenv("LLM_PROVIDER", raising=False)
+    monkeypatch.delenv("LLM_MODEL", raising=False)
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.setenv("GROQ_API_KEY", "obsolete-key-not-for-openrouter")
+
+    def unexpected_request(request):
+        pytest.fail("Missing OpenRouter credentials must not trigger a request")
+
+    async def run():
+        client = httpx.AsyncClient(transport=httpx.MockTransport(unexpected_request))
+        synth = CloudSynthesizer(client=client)
+        assert synth.provider == "openrouter"
+        assert synth.model == "openai/gpt-4.1-mini"
+        result = await synth.summarize(PATIENT, PREDICTION, EVIDENCE)
+        assert result["reason"] == "provider_not_configured"
+        await synth.close()
+        monkeypatch.setenv("LLM_MODEL", "vendor/custom-model")
+        synth = CloudSynthesizer()
+        assert synth.model == "vendor/custom-model"
+        await synth.close()
+
+    asyncio.run(run())

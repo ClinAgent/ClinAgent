@@ -8,10 +8,10 @@ import httpx
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 ENDPOINTS = {
-    "groq": "https://api.groq.com/openai/v1/chat/completions",
+    "openrouter": "https://openrouter.ai/api/v1/chat/completions",
     "openai": "https://api.openai.com/v1/chat/completions",
 }
-DEFAULT_MODELS = {"groq": "openai/gpt-oss-20b", "openai": "gpt-4.1-mini"}
+DEFAULT_MODELS = {"openrouter": "openai/gpt-4.1-mini", "openai": "gpt-4.1-mini"}
 SYSTEM = """You write a research clinical decision-support summary, not a prescription.
 Return only JSON with sentences (exactly 3 strings, each one sentence) and evidence_ids
 (a list of the supplied E1/E2 identifiers you actually use).
@@ -47,10 +47,10 @@ class SummaryPayload(BaseModel):
 
 class CloudSynthesizer:
     def __init__(self, *, client=None):
-        self.provider = os.getenv("LLM_PROVIDER", "groq").lower()
+        self.provider = os.getenv("LLM_PROVIDER", "openrouter").strip().lower()
         if self.provider not in ENDPOINTS:
-            raise ValueError("LLM_PROVIDER must be groq or openai")
-        self.model = os.getenv("LLM_MODEL") or DEFAULT_MODELS[self.provider]
+            raise ValueError("LLM_PROVIDER must be openrouter or openai")
+        self.model = os.getenv("LLM_MODEL", "").strip() or DEFAULT_MODELS[self.provider]
         self.key = os.getenv(f"{self.provider.upper()}_API_KEY", "").strip()
         self.timeout = min(max(float(os.getenv("LLM_TIMEOUT_SECONDS", "8")), 1), 30)
         self.client = client or httpx.AsyncClient(timeout=self.timeout)
@@ -85,11 +85,10 @@ class CloudSynthesizer:
                         {"role": "user", "content": json.dumps(data, allow_nan=False)},
                     ],
                     "response_format": {"type": "json_object"},
-                    "max_completion_tokens": 1024,
                     **(
-                        {"reasoning_effort": "low"}
-                        if self.provider == "groq" and self.model.startswith("openai/gpt-oss")
-                        else {}
+                        {"max_tokens": 1024, "provider": {"require_parameters": True}}
+                        if self.provider == "openrouter"
+                        else {"max_completion_tokens": 1024}
                     ),
                 },
                 timeout=self.timeout,

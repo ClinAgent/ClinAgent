@@ -23,11 +23,14 @@ and the guideline index. On a fresh checkout, run the training and ingestion
 commands below before starting the API. Keep one backend worker on low-end devices
 because each worker loads its own models.
 
-Set `LLM_PROVIDER=groq` and `GROQ_API_KEY` in `.env`, or use
+Set `LLM_PROVIDER=openrouter` and `OPENROUTER_API_KEY` in `.env`, or use
 `LLM_PROVIDER=openai` with `OPENAI_API_KEY`. Restart the server after changing
-configuration. Groq defaults to cloud-hosted `openai/gpt-oss-20b`; OpenAI defaults
+configuration. OpenRouter defaults to `openai/gpt-4.1-mini`; OpenAI defaults
 to `gpt-4.1-mini`. `LLM_MODEL` overrides either default for an account-enabled
-model. No generative model weights are downloaded locally. Never put API keys in
+model supporting JSON output. OpenRouter routing requires support for the requested
+parameters. When migrating from Groq, replace the provider and key variable and
+clear `LLM_MODEL` to use the new default (or set an OpenRouter model ID).
+No generative model weights are downloaded locally. Never put API keys in
 frontend variables. A missing key yields a clearly labeled partial result with
 real model/SHAP/evidence output and no fabricated summary.
 
@@ -70,7 +73,7 @@ flowchart LR
   UI[React dashboard] --> API[FastAPI orchestrator]
   API --> ML[Saved classifier + SHAP]
   ML --> RAG[CPU MiniLM + local Chroma]
-  RAG --> LLM[Groq or OpenAI cloud synthesis]
+  RAG --> LLM[OpenRouter or OpenAI cloud synthesis]
   LLM --> JSON[Unified response]
   JSON --> UI
 ```
@@ -241,8 +244,8 @@ nonclinical sections.
 
 Current guidance was checked against [FastAPI lifespan](https://fastapi.tiangolo.com/advanced/events/),
 [Tailwind with Vite](https://tailwindcss.com/docs/installation/using-vite),
-[Groq's compatible API](https://console.groq.com/docs/openai),
-[Groq GPT-OSS 20B](https://console.groq.com/docs/model/openai/gpt-oss-20b), and
+[OpenRouter's API](https://openrouter.ai/docs/api/reference/overview),
+[OpenRouter provider routing](https://openrouter.ai/docs/guides/routing/provider-selection), and
 [OpenAI chat completions](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create).
 The UI design plan is in [frontend/DESIGN.md](frontend/DESIGN.md).
 
