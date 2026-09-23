@@ -1,25 +1,34 @@
-# Manuscript validation — 22 September 2026
+# Manuscript validation — 23 September 2026
 
-- Tectonic 0.17.0 compiled `main.tex` with IEEEtran conference class and BibTeX.
-- Output: six US Letter pages in two columns, standard class geometry.
-- All six pages rendered with Poppler and visually inspected; changed pages 2
-  and 5 were rendered and checked again after final symbol/figure corrections.
-- No overfull boxes, missing characters, unresolved citations, or unresolved
-  cross-references remain. A long latency equation was split across two lines.
-- Fonts are embedded, including Times-compatible Nimbus Roman body fonts.
-- Nonfatal logs include underfull spacing notices, preamble TU font fallback
-  notices before T1 selection, and an intentionally absent author block. The
-  resulting embedded fonts and rendered layout were checked explicitly.
-- The abstract contains exactly 200 whitespace-delimited words; five Index Terms
-  and all requested section headings are present.
-- Ten bibliography entries are cited. Research references use published venue
-  records, with no arXiv or preprint entries; UCI is separately a dataset source.
-- Numerical tables were regenerated from saved JSON reports. Recorded report
-  checksums match. Seed-label Recall@2 is explicitly a derived diagnostic;
-  classifier results and cloud-completion counts are not new experiments.
-- Source text, BibTeX, Mermaid, TikZ, generated tables, and the PDF are included.
+- Supplied `Template- paper-ieee.docx` rendered and inspected for visual direction.
+  The original file's SHA-256 is recorded in `template-notes.md` and unchanged.
+- Tectonic 0.15.0 compiled IEEEtran with the local Access-style layout adaptation.
+- Output: seven pages, 576 × 783 points (8 × 10.875 inches), two-column body,
+  full-width title/abstract/terms, blue headings, and template-derived captions.
+- All seven final pages rendered with Poppler and visually inspected after the
+  final overflow and page-size corrections. Figures, equations, tables, headers,
+  footers, and references are readable; no clipping or overlap was observed.
+- No overfull/underfull boxes, missing characters, unresolved citations, or
+  unresolved cross-references in the final TeX log. Fonts are embedded, including
+  Times-compatible Nimbus Roman, Nimbus Sans, and chart fonts.
+- Nonfatal Tectonic notices: initial TU font substitutions before T1 setup, and
+  a repeated BibTeX change-detection warning. All ten bibliography keys resolve,
+  and final cross-references and visible bibliography were verified separately.
+- The abstract contains exactly 200 whitespace-delimited words, with five Index
+  Terms and all requested main sections present.
+- Ten references remain cited, using published papers and the primary UCI dataset
+  record. No arXiv/preprint entries or template-paper citations were added.
+- Five graphs regenerated from committed JSON reports, plus the existing vector
+  architecture diagram. Holdout counts reproduce Accuracy/Precision/Recall/F1;
+  all nine model means reproduce their fifteen saved fold scores. SHAP additivity
+  and partial-response status are asserted by the figure generator.
+- `python3 paper/check_manuscript.py` passes, including report checksum checks.
+- The OpenRouter implementation change is separated from the older measured
+  snapshot. No new training, retrieval experiment, or provider call was performed.
+- The LaTeX source archive contains all compilation inputs, vector graphs, and
+  a short build README. It excludes the user's populated Word reference, private
+  data, credentials, and temporary build/QA files.
 
-The unavailable Word template cannot be compared. Author identities, affiliations,
-venue-specific submission rules, and any required ethical or funding disclosures
-must be supplied by the authors. No claim of prospective clinical validation,
-measured hallucination reduction, or successful cloud latency is made.
+Author names, affiliations, funding/ethics disclosures, and a venue-specific
+submission check remain author-supplied requirements. This visual adaptation is
+not a claim that IEEE Access has accepted or published this manuscript.

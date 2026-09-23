@@ -29,3 +29,16 @@ print('PASS: 200-word abstract, five terms, requested headings, published citati
 for name, expected in json.loads((HERE / 'generated/source_checksums.json').read_text()).items():
     assert hashlib.sha256((HERE.parent / name).read_bytes()).hexdigest() == expected, name
 print('PASS: report checksums match the manuscript evidence snapshot.')
+
+tn, fp, fn, tp = e['ml']['confusion_matrix_tn_fp_fn_tp']
+assert tn + fp + fn + tp == e['ml']['holdout_rows'] == 61
+assert abs((tn + tp) / 61 - e['ml']['accuracy']) < 1e-12
+assert abs(tp / (tp + fp) - e['ml']['precision']) < 1e-12
+assert abs(tp / (tp + fn) - e['ml']['recall']) < 1e-12
+assert abs(2 * tp / (2 * tp + fp + fn) - e['ml']['f1']) < 1e-12
+for name in ['model-comparison', 'holdout-performance', 'retrieval-quality',
+             'partial-latency', 'local-shap']:
+    assert f'figures/results/{name}.pdf' in text
+    assert (HERE / f'figures/results/{name}.pdf').stat().st_size > 1000
+assert 'OpenRouter' in text and 'a9b2ac7' in text
+print('PASS: plotted holdout counts agree with metrics; five result figures are embedded.')

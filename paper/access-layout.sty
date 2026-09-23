@@ -1,0 +1,25 @@
+% Visual adaptation of the supplied IEEE Access article; no publication branding.
+\ProvidesPackage{access-layout}
+\RequirePackage[paperwidth=8in,paperheight=10.875in,left=.5in,right=.5in,top=.65in,bottom=.55in,headheight=14pt,headsep=14pt]{geometry}
+\RequirePackage{xcolor}
+\definecolor{accessblue}{HTML}{0073AE}
+\RequirePackage{helvet}
+\RequirePackage{titlesec}
+\RequirePackage{fancyhdr}
+\RequirePackage[font=footnotesize,labelfont={bf,color=accessblue},labelsep=period]{caption}
+\setlength{\columnsep}{.24in}
+\titleformat{\section}{\normalfont\sffamily\bfseries\raggedright\color{accessblue}}{\thesection.}{.55em}{\MakeUppercase}
+\titleformat{\subsection}{\normalfont\small\sffamily\bfseries\raggedright}{\Alph{subsection}.}{.55em}{\MakeUppercase}
+\titlespacing*{\section}{0pt}{10pt}{4pt}
+\titlespacing*{\subsection}{0pt}{8pt}{3pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\sffamily\footnotesize\color{accessblue}AegisHealth}
+\fancyhead[R]{\sffamily\scriptsize Explainable and Evidence-Grounded Clinical Decision Support}
+\fancyfoot[R]{\sffamily\footnotesize\thepage}
+\renewcommand{\headrulewidth}{.3pt}
+\renewenvironment{abstract}{\par\noindent\textcolor{accessblue}{\sffamily\bfseries ABSTRACT}\enspace\ignorespaces}{\par\vspace{10pt}}
+\renewenvironment{IEEEkeywords}{\par\noindent\textcolor{accessblue}{\sffamily\bfseries INDEX TERMS}\enspace\ignorespaces}{\par}
+\setlength{\emergencystretch}{1em}
+
+\raggedbottom
